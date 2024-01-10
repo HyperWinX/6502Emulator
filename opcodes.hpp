@@ -1,0 +1,24 @@
+// LDA instructions
+#define LDA_IM 0xA9
+#define LDA_ZP 0xA5
+#define LDA_ZPX 0xB5
+#define LDA_ABS 0xAD
+#define LDA_ABSX 0xBD
+#define LDA_ABSY 0xB9
+#define LDA_INDX 0xA1
+#define LDA_INDY 0xB1
+// LDX instructions
+#define LDX_IM 0xA2
+#define LDX_ZP 0xA6
+#define LDX_ZPY 0xB6
+#define LDX_ABS 0xAE
+#define LDX_ABSY 0xBE
+// LDY instructions
+#define LDY_IM 0xA0
+#define LDY_ZP 0xA4
+#define LDY_ZPX 0xB4
+#define LDY_ABS 0xAC
+#define LDY_ABSX 0xBC
+// Jump and return
+#define JSR_ABS 0x20
+#define RTS 0x60
