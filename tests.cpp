@@ -2,7 +2,7 @@
 #include "cpu.hpp"
 #include "opcodes.hpp"
 
-CPU cpu;
+EMU6502::CPU cpu;
 
 TEST(CPUEMU, CPU_INIT){
     EXPECT_TRUE(cpu.Reset());
