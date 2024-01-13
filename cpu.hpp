@@ -2,6 +2,8 @@
 #include <cstdbool>
 #include <cstdlib>
 #include <cstdio>
+#include <fstream>
+#include <cstring>
 #include "opcodes.hpp"
 
 #define MAX_MEM 1024 * 64
@@ -27,7 +29,7 @@ struct EMU6502::Memory{
         uint8_t& operator[](uint32_t address){
             return ((uint8_t*)MemoryPointer)[address];
         }
-};
+}__attribute__((packed));
 
 struct EMU6502::CPU{
     public:
@@ -36,7 +38,7 @@ struct EMU6502::CPU{
         bool C, Z, I, D, B, V, N;
         int32_t TotalCycles;
         Memory Mem;
-	int Execute(int32_t Cycles);
+	    int Execute(int32_t Cycles);
         int Reset(){
             PC = 0xFFFC;
             SP = 0x01FF;
@@ -44,6 +46,13 @@ struct EMU6502::CPU{
             C = Z = I = D = B = V = N = 0;
             if (!Mem.Initialize()) return 0;
             return 1;
+        }
+        void ADCSetStatusFlags(uint8_t Byte){
+            if (A + Byte + (C ? 1 : 0) > 127)
+                C = 1;
+            else C = 0;
+            if (A == 0) Z = 1;
+            if (A & 0b10000000) N = 1;
         }
         void LDASetStatusFlags(){
             Z = (A == 0);
@@ -76,6 +85,25 @@ struct EMU6502::CPU{
                     V ? '1' : '0',
                     N ? '1' : '0');
         }
+        void SaveDump(){
+            std::ofstream dump("dump.dmp");
+            dump << A; //Save registers
+            dump << X;
+            dump << Y;
+            dump << PC;
+            dump << SP;
+            dump << C; //Save flags;
+            dump << Z;
+            dump << I;
+            dump << D;
+            dump << B;
+            dump << V;
+            dump << N;
+            char buf[65536];
+            memcpy(buf, Mem.MemoryPointer, 65536);
+            dump << buf;
+            dump.close();
+        }
         void WriteWord(uint16_t Data, uint16_t Address){
             Mem[Address] = Data & 0xFF;
             Mem[Address + 1] = (Data >> 8);
@@ -102,44 +130,44 @@ struct EMU6502::CPU{
             Word |= (ReadByte(Address + 1) << 8);
             return Word;
         }
-	void PushByteToStack(uint8_t Byte){
-		Mem[SP--] = Byte;
-	}
-	uint8_t PopByteFromStack(){
-		 return Mem[++SP];
-	}
-	void PushWordToStack(uint16_t Word){
-		Mem[SP--] = Word & 0xFF;
-		Mem[SP--] = (Word >> 8) & 0xFF;
-	}
-	uint16_t PopWordFromStack(){
-		uint16_t Word = 0;
-		Word = (Mem[++SP] << 8);
-		Word |= Mem[++SP] & OxFF;
-		return Word;
-	}
+	    void PushByteToStack(uint8_t Byte){
+	    	Mem[SP--] = Byte;
+	    }
+	    uint8_t PopByteFromStack(){
+	    	 return Mem[++SP];
+	    }
+	    void PushWordToStack(uint16_t Word){
+	    	Mem[SP--] = Word & 0xFF;
+	    	Mem[SP--] = (Word >> 8) & 0xFF;
+	    }
+	    uint16_t PopWordFromStack(){
+		    uint16_t Word = 0;
+		    Word = (Mem[++SP] << 8);
+		    Word |= Mem[++SP] & 0xFF;
+		    return Word;
+	    }
         uint16_t GetIndirectXAddress(){
-		return ReadWord(FetchWord(PC) + X);
-	}
-	uint16_t GetIndirectYAddress(){
-		return ReadWord(FetchWord(PC) + Y);
-	}
-	uint8_t GetZeroPageAddress(){
-		return FetchByte(PC);
-	}
-	uint8_t GetZeroPageXAddress(){
-		return FetchByte(PC) + X;
-	}
-	uint8_t GetZeroPageYAddress(){
-		return FetchByte(PC) + Y;
-	}
-	uint16_t GetAbsoluteAddress(){
-		return FetchWord(PC);
-	}
-	uint16_t GetAbsoluteXAddress(){
-		return FetchWord(PC) + X;
-	}
-	uint16_t GetAbsoluteYAddress(){
-		return FetchWord(PC) + Y;
-	}
-};
+		    return ReadWord(FetchWord(PC) + X);
+	    }
+	    uint16_t GetIndirectYAddress(){
+		    return ReadWord(FetchWord(PC)) + Y;
+	    }
+	    uint8_t GetZeroPageAddress(){
+	    	return FetchByte(PC);
+	    }
+	    uint8_t GetZeroPageXAddress(){
+	    	return FetchByte(PC) + X;
+	    }
+	    uint8_t GetZeroPageYAddress(){
+	    	return FetchByte(PC) + Y;
+	    }
+        uint16_t GetAbsoluteAddress(){
+            return FetchWord(PC);
+        }
+        uint16_t GetAbsoluteXAddress(){
+            return FetchWord(PC) + X;
+        }
+        uint16_t GetAbsoluteYAddress(){
+            return FetchWord(PC) + Y;
+        }
+}__attribute__((packed));

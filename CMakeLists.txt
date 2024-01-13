@@ -1,2 +1,5 @@
-cmake_minimum_required(3.1)
+cmake_minimum_required(VERSION 3.1)
 project(6502Emulator)
+add_executable(emulator cpu.cpp main.cpp)
+add_executable(tests cpu.cpp tests.cpp)
+target_link_libraries(tests gtest_main gtest pthread)

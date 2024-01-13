@@ -7,44 +7,52 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                 switch(instruction){
                     // ADC instruction
                     case ADC_IM:{
-                        A = FetchByte(PC);
-                        LDASetStatusFlags();
+                        uint8_t Byte = FetchByte(PC);
+                        A += (Byte + (C ? 1 : 0));
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_ZP:{
-                        A = ReadByte(GetZeroPageAddress());
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetZeroPageAddress());
+                        A += Byte + (C ? 1 : 0);
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_ZPX:{
-                        A = ReadByte(GetZeroPageXAddress());
-			TotalCycles--;
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetZeroPageXAddress());
+                        A += Byte + (C ? 1 : 0);
+			            TotalCycles--;
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_ABS:{
-                        A = ReadByte(GetAbsoluteAddress());
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetAbsoluteAddress());
+                        A += Byte + (C ? 1 : 0);
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_ABSX:{
-                        A = ReadByte(GetAbsoluteXAddress());
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetAbsoluteXAddress());
+                        A += Byte + (C ? 1 : 0);
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_ABSY:{
-                        A = ReadByte(GetAbsoluteYAddress());
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetAbsoluteYAddress());
+                        A += Byte + (C ? 1 : 0);
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_INDX:{
-                        A = ReadByte(GetIndirectXAddress());
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetIndirectXAddress());
+                        A += Byte + (C ? 1 : 0);
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     case ADC_INDY:{
-			A = ReadByte(GetIndirectYAddress());
-                        LDASetStatusFlags();
+                        uint8_t Byte = ReadByte(GetIndirectYAddress());
+			            A += Byte + (C ? 1 : 0);
+                        ADCSetStatusFlags(Byte);
                         break;
                     }
                     // LDA instruction
@@ -102,6 +110,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     }
                     case LDX_ZPY:{
                         X = ReadByte(GetZeroPageYAddress());
+                        TotalCycles--;
                         LDXSetStatusFlags();
                         break;
                     }
@@ -128,6 +137,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     }
                     case LDY_ZPX:{
                         Y = ReadByte(GetZeroPageXAddress());
+                        TotalCycles--;
                         LDYSetStatusFlags();
                         break;
                     }
@@ -158,7 +168,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     }
                     case ORA_ZPX:{
                         A |= ReadByte(GetZeroPageXAddress());
-			TotalCycles--;
+			            TotalCycles--;
                         ORASetStatusFlags();
                         break;
                     }
@@ -354,6 +364,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     default:
                         printf("Unknown instruction! CPU halted.\n");
                         StateDump();
+                        SaveDump();
                         return 0;
                         break;
                 }
