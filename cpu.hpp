@@ -53,7 +53,9 @@ struct EMU6502::CPU{
                 C = 1;
             else C = 0;
             if (A == 0) Z = 1;
+            else Z = 0;
             if (A & 0b10000000) N = 1;
+            else N = 0;
         }
         void ANDSetStatusFlags(){
             Z = (A == 0);
@@ -94,6 +96,15 @@ struct EMU6502::CPU{
         void PLASetStatusFlags(){
             Z = (A == 0);
             N = (A & 0b10000000) > 0;
+        }
+        void SBCSetStatusFlags(uint8_t Byte){
+            if (A - (Byte + (C ? 1 : 0)) < -128)
+                C = 1;
+            else C = 0;
+            if (A == 0) Z = 1;
+            else Z = 0;
+            if (A & 0b10000000) N = 1;
+            else N = 0;
         }
         void StateDump(){
             printf("A=0x%x X=0x%x Y=0x%x\nPC=0x%x SP=0x%x\nC=%c Z=%c I=%c\nD=%c B=%c V=%c\n    N=%c\n",
@@ -156,19 +167,23 @@ struct EMU6502::CPU{
             return Word;
         }
 	    void PushByteToStack(uint8_t Byte){
+            TotalCycles--;
 	    	Mem[SP--] = Byte;
 	    }
 	    uint8_t PopByteFromStack(){
+            TotalCycles--;
 	    	 return Mem[++SP];
 	    }
 	    void PushWordToStack(uint16_t Word){
 	    	Mem[SP--] = Word & 0xFF;
 	    	Mem[SP--] = (Word >> 8) & 0xFF;
+            TotalCycles -= 2;
 	    }
 	    uint16_t PopWordFromStack(){
 		    uint16_t Word = 0;
 		    Word = (Mem[++SP] << 8);
 		    Word |= Mem[++SP] & 0xFF;
+            TotalCycles -= 2;
 		    return Word;
 	    }
         uint16_t GetIndirectXAddress(){

@@ -955,6 +955,118 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                         TotalCycles -= 6;
                         break;
                     }
+                    // RTI instruction
+                    case RTI:{
+                        uint8_t Flags = PopByteFromStack();
+                        if (Flags & 0b10000000) C = 1;
+                        if (Flags & 0b01000000) Z = 1;
+                        if (Flags & 0b00100000) I = 1;
+                        if (Flags & 0b00010000) D = 1;
+                        if (Flags & 0b00001000) B = 1;
+                        if (Flags & 0b00000010) V = 1;
+                        if (Flags & 0b00000001) N = 1;
+                        PC = PopWordFromStack();
+                        TotalCycles--;
+                        break;
+                    }
+                    // SBC instruction
+                    case SBC_IM:{
+                        uint8_t Byte = FetchByte(PC);
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_ZP:{
+                        uint8_t Byte = ReadByte(GetZeroPageAddress());
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_ZPX:{
+                        uint8_t Byte = ReadByte(GetZeroPageXAddress());
+                        A -= (Byte + (C ? 0 : 1));
+			            TotalCycles--;
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_ABS:{
+                        uint8_t Byte = ReadByte(GetAbsoluteAddress());
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_ABSX:{
+                        uint8_t Byte = ReadByte(GetAbsoluteXAddress());
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_ABSY:{
+                        uint8_t Byte = ReadByte(GetAbsoluteYAddress());
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_INDX:{
+                        uint8_t Byte = ReadByte(GetIndirectXAddress());
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    case SBC_INDY:{
+                        uint8_t Byte = ReadByte(GetIndirectYAddress());
+                        A -= (Byte + (C ? 0 : 1));
+                        SBCSetStatusFlags(Byte);
+                        break;
+                    }
+                    // SEC instruction
+                    case SEC:{
+                        C = 1;
+                        TotalCycles--;
+                        break;
+                    }
+                    // SED instruction
+                    case SED:{
+                        D = 1;
+                        TotalCycles--;
+                        break;
+                    }
+                    // SEI instruction
+                    case SEI:{
+                        I = 1;
+                        TotalCycles--;
+                        break;
+                    }
+                    // STA instruction
+                    case STA_ZP:{
+                        Mem[GetZeroPageAddress()] = A;
+                        break;
+                    }
+                    case STA_ZPX:{
+                        Mem[GetZeroPageXAddress()] = A;
+                        TotalCycles--;
+                        break;
+                    }
+                    case STA_ABS:{
+                        Mem[GetAbsoluteAddress()] = A;
+                        break;
+                    }
+                    case STA_ABSX:{
+                        Mem[GetAbsoluteXAddress()] = A;
+                        break;
+                    }
+                    case STA_ABSY:{
+                        Mem[GetAbsoluteYAddress()] = A;
+                        break;
+                    }
+                    case STA_INDX:{
+                        Mem[GetIndirectXAddress()] = A;
+                        break;
+                    }
+                    case STA_INDY:{
+                        Mem[GetIndirectYAddress()] = A;
+                        break;
+                    }
                     // JSR and RTS instructions
                     case JSR_ABS:{
                         uint16_t Address = FetchWord(PC);
