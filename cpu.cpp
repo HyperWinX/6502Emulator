@@ -97,6 +97,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                         ANDSetStatusFlags();
                         break;
                     }
+                    // ASL instruction
                     case ASL_AC:{
                         C = (A & 0b10000000) > 0;
                         A = (A << 1);
@@ -319,6 +320,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                             Z = 0;
                             C = 1;
                         }
+                        TotalCycles--;
                         break;
                     }
                     case CMP_ABS:{
@@ -370,7 +372,6 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                             Z = 0;
                             C = 1;
                         }
-                        LDASetStatusFlags();
                         break;
                     }
                     case CMP_INDX:{
@@ -400,11 +401,268 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                             N = 0;
                             Z = 1;
                             C = 1;
-                        } else{
+                        } else {
                             N = (A & 0b10000000);
                             Z = 0;
                             C = 1;
                         }
+                        break;
+                    }
+                    // CPX instruction
+                    case CPX_IM:{
+                        uint8_t Byte = FetchByte(PC);
+                        if (X < Byte){
+                            N = (X & 0b10000000);
+                            Z = 0;
+                            C = 0;
+                        } else if (X == Byte){
+                            N = 0;
+                            Z = 1;
+                            C = 1;
+                        } else{
+                            N = (X & 0b10000000);
+                            Z = 0;
+                            C = 1;
+                        }
+                        break;
+                    }
+                    case CPX_ZP:{
+                        uint8_t Byte = ReadByte(GetZeroPageAddress());
+                        if (X < Byte){
+                            N = (X & 0b10000000);
+                            Z = 0;
+                            C = 0;
+                        } else if (X == Byte){
+                            N = 0;
+                            Z = 1;
+                            C = 1;
+                        } else{
+                            N = (X & 0b10000000);
+                            Z = 0;
+                            C = 1;
+                        }
+                        break;
+                    }
+                    case CPX_ABS:{
+                        uint8_t Byte = ReadByte(GetAbsoluteAddress());
+                        if (X < Byte){
+                            N = (X & 0b10000000);
+                            Z = 0;
+                            C = 0;
+                        } else if (X == Byte){
+                            N = 0;
+                            Z = 1;
+                            C = 1;
+                        } else{
+                            N = (X & 0b10000000);
+                            Z = 0;
+                            C = 1;
+                        }
+                        break;
+                    }
+                    // CPY instruction
+                    case CPY_IM:{
+                        uint8_t Byte = FetchByte(PC);
+                        if (Y < Byte){
+                            N = (Y & 0b10000000);
+                            Z = 0;
+                            C = 0;
+                        } else if (Y == Byte){
+                            N = 0;
+                            Z = 1;
+                            C = 1;
+                        } else{
+                            N = (Y & 0b10000000);
+                            Z = 0;
+                            C = 1;
+                        }
+                        break;
+                    }
+                    case CPY_ZP:{
+                        uint8_t Byte = ReadByte(GetZeroPageAddress());
+                        if (Y < Byte){
+                            N = (Y & 0b10000000);
+                            Z = 0;
+                            C = 0;
+                        } else if (Y == Byte){
+                            N = 0;
+                            Z = 1;
+                            C = 1;
+                        } else{
+                            N = (Y & 0b10000000);
+                            Z = 0;
+                            C = 1;
+                        }
+                        break;
+                    }
+                    case CPY_ABS:{
+                        uint8_t Byte = ReadByte(GetAbsoluteAddress());
+                        if (Y < Byte){
+                            N = (Y & 0b10000000);
+                            Z = 0;
+                            C = 0;
+                        } else if (Y == Byte){
+                            N = 0;
+                            Z = 1;
+                            C = 1;
+                        } else{
+                            N = (Y & 0b10000000);
+                            Z = 0;
+                            C = 1;
+                        }
+                        break;
+                    }
+                    // DEC instruction
+                    case DEC_ZP:{
+                        uint16_t Address = GetZeroPageAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte--;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles--;
+                        break;
+                    }
+                    case DEC_ZPX:{
+                        uint16_t Address = GetZeroPageXAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte--;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles -= 2;
+                        break;
+                    }
+                    case DEC_ABS:{
+                        uint16_t Address = GetAbsoluteAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte--;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles--;
+                        break;
+                    }
+                    case DEC_ABSX:{
+                        uint16_t Address = GetAbsoluteXAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte--;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles -= 2;
+                        break;
+                    }
+                    // DEX instruction
+                    case DEX:{
+                        X--;
+                        TotalCycles--;
+                        DEXSetStatusFlags();
+                        break;
+                    }
+                    // DEY instruction
+                    case DEY:{
+                        Y--;
+                        TotalCycles--;
+                        DEYSetStatusFlags();
+                        break;
+                    }
+                    // EOR instruction
+                    case EOR_IM:{
+                        A ^= FetchByte(PC);
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    case EOR_ZP:{
+                        A ^= ReadByte(GetZeroPageAddress());
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    case EOR_ZPX:{
+                        A ^= ReadByte(GetZeroPageXAddress());
+                        EORSetStatusFlags();
+			            TotalCycles--;
+                        break;
+                    }
+                    case EOR_ABS:{
+                        A ^= ReadByte(GetAbsoluteAddress());
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    case EOR_ABSX:{
+                        A ^= ReadByte(GetAbsoluteXAddress());
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    case EOR_ABSY:{
+                        A ^= ReadByte(GetAbsoluteYAddress());
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    case EOR_INDX:{
+                        A ^= ReadByte(GetIndirectXAddress());
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    case EOR_INDY:{
+                        A ^= ReadByte(GetIndirectYAddress());
+                        EORSetStatusFlags();
+                        break;
+                    }
+                    // INC instruction
+                    case INC_ZP:{
+                        uint16_t Address = GetZeroPageAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte++;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles--;
+                        break;
+                    }
+                    case INC_ZPX:{
+                        uint16_t Address = GetZeroPageXAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte++;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles -= 2;
+                        break;
+                    }
+                    case INC_ABS:{
+                        uint16_t Address = GetAbsoluteAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte++;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles--;
+                        break;
+                    }
+                    case INC_ABSX:{
+                        uint16_t Address = GetAbsoluteXAddress();
+                        uint8_t Byte = ReadByte(Address);
+                        Byte++;
+                        DECSetStatusFlags(Byte);
+                        WriteByte(Byte, Address);
+                        TotalCycles -= 2;
+                        break;
+                    }
+                    // DEX instruction
+                    case INX:{
+                        X++;
+                        TotalCycles--;
+                        DEXSetStatusFlags();
+                        break;
+                    }
+                    // DEY instruction
+                    case INY:{
+                        Y++;
+                        TotalCycles--;
+                        DEYSetStatusFlags();
+                        break;
+                    }
+                    // JMP instruction
+                    case JMP_ABS:{
+                        PC = FetchWord(PC);
+                        break;
+                    }
+                    case JMP_IND:{
+                        PC = FetchWord(FetchWord(PC));
                         break;
                     }
                     // LDA instruction

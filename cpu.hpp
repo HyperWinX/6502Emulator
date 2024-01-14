@@ -44,6 +44,7 @@ struct EMU6502::CPU{
             SP = 0x01FF;
             A = X = Y = 0;
             C = Z = I = D = B = V = N = 0;
+            TotalCycles = 0;
             if (!Mem.Initialize()) return 0;
             return 1;
         }
@@ -55,6 +56,22 @@ struct EMU6502::CPU{
             if (A & 0b10000000) N = 1;
         }
         void ANDSetStatusFlags(){
+            Z = (A == 0);
+            N = (A & 0b10000000) > 0;
+        }
+        void DECSetStatusFlags(uint8_t Byte){
+            Z = (Byte == 0);
+            N = (Byte & 0b10000000) > 0;
+        }
+        void DEXSetStatusFlags(){
+            Z = (X == 0);
+            N = (X & 0b10000000) > 0;
+        }
+        void DEYSetStatusFlags(){
+            Z = (Y == 0);
+            N = (Y & 0b10000000) > 0;
+        }
+        void EORSetStatusFlags(){
             Z = (A == 0);
             N = (A & 0b10000000) > 0;
         }
@@ -107,6 +124,10 @@ struct EMU6502::CPU{
             memcpy(buf, Mem.MemoryPointer, 65536);
             dump << buf;
             dump.close();
+        }
+        void WriteByte(uint8_t Data, uint16_t Address){
+            Mem[Address] = Data;
+            TotalCycles--;
         }
         void WriteWord(uint16_t Data, uint16_t Address){
             Mem[Address] = Data & 0xFF;
