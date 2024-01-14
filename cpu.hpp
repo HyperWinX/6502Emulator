@@ -54,6 +54,10 @@ struct EMU6502::CPU{
             if (A == 0) Z = 1;
             if (A & 0b10000000) N = 1;
         }
+        void ANDSetStatusFlags(){
+            Z = (A == 0);
+            N = (A & 0b10000000) > 0;
+        }
         void LDASetStatusFlags(){
             Z = (A == 0);
             N = (A & 0b10000000) > 0;
