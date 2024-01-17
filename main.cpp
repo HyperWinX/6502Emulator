@@ -5,7 +5,7 @@ int main(){
     EMU6502::CPU cpu;
     cpu.Reset();
     //Little program
-    cpu.Mem[0xFFFC] = 0xFF;
+    cpu.Mem[0xFFFC] = 2;
     cpu.Mem[0xFFFD] = 0x24;
     cpu.Mem[0xFFFE] = 0x02;
     cpu.Mem[0x0224] = 0x04;

@@ -175,6 +175,26 @@
 #define STA_ABSY 0x99
 #define STA_INDX 0x81
 #define STA_INDY 0x91
+// STX opcodes
+#define STX_ZP 0x86
+#define STX_ZPY 0x96
+#define STX_ABS 0x8E
+// STY opcodes
+#define STY_ZP 0x84
+#define STY_ZPX 0x94
+#define STY_ABS 0x8C
+// TAX opcodes
+#define TAX 0xAA
+// TAY opcodes
+#define TAY 0xA8
+// TSX opcodes
+#define TSX 0xBA
+// TXA opcodes
+#define TXA 0x8A
+// TXS opcodes
+#define TXS 0x9A
+// TYA opcodes
+#define TYA 0x98
 // Jump and return
 #define JSR_ABS 0x20
 #define RTS 0x60

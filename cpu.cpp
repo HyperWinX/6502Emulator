@@ -1040,31 +1040,104 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     // STA instruction
                     case STA_ZP:{
                         Mem[GetZeroPageAddress()] = A;
+                        TotalCycles--;
                         break;
                     }
                     case STA_ZPX:{
                         Mem[GetZeroPageXAddress()] = A;
-                        TotalCycles--;
+                        TotalCycles -= 2;
                         break;
                     }
                     case STA_ABS:{
                         Mem[GetAbsoluteAddress()] = A;
+                        TotalCycles--;
                         break;
                     }
                     case STA_ABSX:{
                         Mem[GetAbsoluteXAddress()] = A;
+                        TotalCycles -= 2;
                         break;
                     }
                     case STA_ABSY:{
                         Mem[GetAbsoluteYAddress()] = A;
+                        TotalCycles -= 2;
                         break;
                     }
                     case STA_INDX:{
                         Mem[GetIndirectXAddress()] = A;
+                        TotalCycles--;
                         break;
                     }
                     case STA_INDY:{
                         Mem[GetIndirectYAddress()] = A;
+                        TotalCycles--;
+                        break;
+                    }
+                    // STX instruction
+                    case STX_ZP:{
+                        Mem[GetZeroPageAddress()] = X;
+                        TotalCycles--;
+                        break;
+                    }
+                    case STX_ZPY:{
+                        Mem[GetZeroPageYAddress()] = X;
+                        TotalCycles -= 2;
+                        break;
+                    }
+                    case STX_ABS:{
+                        Mem[GetAbsoluteAddress()] = X;
+                        TotalCycles--;
+                        break;
+                    }
+                    // STY instruction
+                    case STY_ZP:{
+                        Mem[GetZeroPageAddress()] = Y;
+                        TotalCycles--;
+                        break;
+                    }
+                    case STY_ZPX:{
+                        Mem[GetZeroPageXAddress()] = Y;
+                        TotalCycles -= 2;
+                        break;
+                    }
+                    case STY_ABS:{
+                        Mem[GetAbsoluteAddress()] = Y;
+                        TotalCycles--;
+                        break;
+                    }
+                    case TAX:{
+                        X = A;
+                        TotalCycles--;
+                        TAXSetStatusFlags();
+                        break;
+                    }
+                    case TAY:{
+                        Y = A;
+                        TotalCycles--;
+                        TAYSetStatusFlags();
+                        break;
+                    }
+                    case TSX:{
+                        X = SP;
+                        TotalCycles--;
+                        TSXSetStatusFlags();
+                        break;
+                    }
+                    case TXA:{
+                        A = X;
+                        TotalCycles--;
+                        TXASetStatusFlags();
+                        break;
+                    }
+                    case TXS:{
+                        SP = X;
+                        TotalCycles--;
+                        break;
+                    }
+                    case TYA:{
+                        A = Y;
+                        TotalCycles--;
+                        TYASetStatusFlags();
                         break;
                     }
                     // JSR and RTS instructions

@@ -106,6 +106,26 @@ struct EMU6502::CPU{
             if (A & 0b10000000) N = 1;
             else N = 0;
         }
+        void TAXSetStatusFlags(){
+            Z = !X;
+            N = X & 0b10000000;
+        }
+        void TAYSetStatusFlags(){
+            Z = !Y;
+            N = Y & 0b10000000;
+        }
+        void TSXSetStatusFlags(){
+            Z = !X;
+            N = X & 0b10000000;
+        }
+        void TXASetStatusFlags(){
+            Z = !A;
+            N = A & 0b10000000;
+        }
+        void TYASetStatusFlags(){
+            Z = !A;
+            N = A & 0b10000000;
+        }
         void StateDump(){
             printf("A=0x%x X=0x%x Y=0x%x\nPC=0x%x SP=0x%x\nC=%c Z=%c I=%c\nD=%c B=%c V=%c\n    N=%c\n",
                     A, X, Y, PC, SP,
@@ -118,23 +138,24 @@ struct EMU6502::CPU{
                     N ? '1' : '0');
         }
         void SaveDump(){
-            std::ofstream dump("dump.dmp");
-            dump << A; //Save registers
-            dump << X;
-            dump << Y;
-            dump << PC;
-            dump << SP;
-            dump << C; //Save flags;
-            dump << Z;
-            dump << I;
-            dump << D;
-            dump << B;
-            dump << V;
-            dump << N;
-            char buf[65536];
+            uint8_t buf[65536 + 3 + 4 + 7];
+            memset(buf, 0x00, sizeof(buf));
             memcpy(buf, Mem.MemoryPointer, 65536);
-            dump << buf;
-            dump.close();
+            buf[65536] = A;
+            buf[65537] = X;
+            buf[65538] = Y;
+            memcpy(buf + 65539, &SP, 2);
+            memcpy(buf + 65541, &PC, 2);
+            buf[65543] = C;
+            buf[65544] = Z;
+            buf[65545] = I;
+            buf[65546] = D;
+            buf[65547] = B;
+            buf[65548] = V;
+            buf[65549] = N;
+            FILE* dump = fopen("emudump.dmp", "w");
+            fwrite(buf, sizeof(buf), sizeof(uint8_t), dump);
+            fclose(dump);
         }
         void WriteByte(uint8_t Data, uint16_t Address){
             Mem[Address] = Data;
@@ -209,5 +230,9 @@ struct EMU6502::CPU{
         }
         uint16_t GetAbsoluteYAddress(){
             return FetchWord(PC) + Y;
+        }
+        ~CPU(){
+            free(Mem.MemoryPointer);
+            TotalCycles = 0;
         }
 }__attribute__((packed));
