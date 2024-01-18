@@ -38,6 +38,7 @@ struct EMU6502::CPU{
         bool C, Z, I, D, B, V, N;
         int32_t TotalCycles;
         Memory Mem;
+        int initialized;
 	    int Execute(int32_t Cycles);
         int Reset(){
             PC = 0xFFFC;
@@ -45,6 +46,7 @@ struct EMU6502::CPU{
             A = X = Y = 0;
             C = Z = I = D = B = V = N = 0;
             TotalCycles = 0;
+            initialized =0 ;
             if (!Mem.Initialize()) return 0;
             return 1;
         }

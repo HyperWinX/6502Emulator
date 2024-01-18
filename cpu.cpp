@@ -2,8 +2,7 @@
 
 int EMU6502::CPU::Execute(int32_t Cycles){
             TotalCycles = Cycles;
-	    PC = FetchWord(PC);
-	    TotalCycles += 2;
+	    if(!initialized){ PC = FetchWord(PC); initialized++; TotalCycles += 2;}
             while (TotalCycles > 0){
                 uint8_t instruction = FetchByte(PC);
                 switch(instruction){

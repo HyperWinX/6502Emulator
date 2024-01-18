@@ -9,8 +9,10 @@ TEST(CPUEMU, CPU_INIT){
 }
 
 TEST(CPUEMU, CPU_ADC_IM){
-    cpu.Mem[0xFFFC] = ADC_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.A = 2;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(2));
@@ -20,8 +22,10 @@ TEST(CPUEMU, CPU_ADC_IM){
 }
 
 TEST(CPUEMU, CPU_ADC_ZP){
-    cpu.Mem[0xFFFC] = ADC_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 2;
     cpu.C = 1;
@@ -32,8 +36,10 @@ TEST(CPUEMU, CPU_ADC_ZP){
 }
 
 TEST(CPUEMU, CPU_ADC_ZPX){
-    cpu.Mem[0xFFFC] = ADC_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     cpu.A = 2;
@@ -45,8 +51,10 @@ TEST(CPUEMU, CPU_ADC_ZPX){
 }
 
 TEST(CPUEMU, CPU_ADC_ABS){
-    cpu.Mem[0xFFFC] = ADC_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 2;
     cpu.C = 1;
@@ -57,9 +65,11 @@ TEST(CPUEMU, CPU_ADC_ABS){
 }
 
 TEST(CPUEMU, CPU_ADC_ABSX){
-    cpu.Mem[0xFFFC] = ADC_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     cpu.A = 2;
@@ -71,9 +81,11 @@ TEST(CPUEMU, CPU_ADC_ABSX){
 }
 
 TEST(CPUEMU, CPU_ADC_ABSY){
-    cpu.Mem[0xFFFC] = ADC_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
     cpu.A = 2;
@@ -85,9 +97,11 @@ TEST(CPUEMU, CPU_ADC_ABSY){
 }
 
 TEST(CPUEMU, CPU_ADC_INDX){
-    cpu.Mem[0xFFFC] = ADC_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x69;
@@ -100,9 +114,11 @@ TEST(CPUEMU, CPU_ADC_INDX){
 }
 
 TEST(CPUEMU, CPU_ADC_INDY){
-    cpu.Mem[0xFFFC] = ADC_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ADC_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x69;
@@ -115,8 +131,10 @@ TEST(CPUEMU, CPU_ADC_INDY){
 }
 
 TEST(CPUEMU, CPU_AND_IM){
-    cpu.Mem[0xFFFC] = AND_IM;
-    cpu.Mem[0xFFFD] = 0b00000101;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_IM;
+    cpu.Mem[0x0201] = 0b00000101;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0b00000101);
@@ -125,8 +143,10 @@ TEST(CPUEMU, CPU_AND_IM){
 }
 
 TEST(CPUEMU, CPU_AND_ZP){
-    cpu.Mem[0xFFFC] = AND_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b00000101;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(3));
@@ -136,8 +156,10 @@ TEST(CPUEMU, CPU_AND_ZP){
 }
 
 TEST(CPUEMU, CPU_AND_ZPX){
-    cpu.Mem[0xFFFC] = AND_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0b00000101;
     cpu.X = 0x02;
     cpu.A = 0b01010101;
@@ -148,8 +170,10 @@ TEST(CPUEMU, CPU_AND_ZPX){
 }
 
 TEST(CPUEMU, CPU_AND_ABS){
-    cpu.Mem[0xFFFC] = AND_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b00000101;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(4));
@@ -159,9 +183,11 @@ TEST(CPUEMU, CPU_AND_ABS){
 }
 
 TEST(CPUEMU, CPU_AND_ABSX){
-    cpu.Mem[0xFFFC] = AND_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0b00000101;
     cpu.X = 2;
     cpu.A = 0b01010101;
@@ -172,9 +198,11 @@ TEST(CPUEMU, CPU_AND_ABSX){
 }
 
 TEST(CPUEMU, CPU_AND_ABSY){
-    cpu.Mem[0xFFFC] = AND_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0b00000101;
     cpu.Y = 2;
     cpu.A = 0b01010101;
@@ -185,9 +213,11 @@ TEST(CPUEMU, CPU_AND_ABSY){
 }
 
 TEST(CPUEMU, CPU_AND_INDX){
-    cpu.Mem[0xFFFC] = AND_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0b00000101;
@@ -199,9 +229,11 @@ TEST(CPUEMU, CPU_AND_INDX){
 }
 
 TEST(CPUEMU, CPU_AND_INDY){
-    cpu.Mem[0xFFFC] = AND_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = AND_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0b00000101;
@@ -213,7 +245,9 @@ TEST(CPUEMU, CPU_AND_INDY){
 }
 
 TEST(CPUEMU, CPU_ASL_AC){
-    cpu.Mem[0xFFFC] = ASL_AC;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ASL_AC;
     cpu.A = 0b11010101;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0b10101010);
@@ -223,8 +257,10 @@ TEST(CPUEMU, CPU_ASL_AC){
 }
 
 TEST(CPUEMU, CPU_ASL_ZP){
-    cpu.Mem[0xFFFC] = ASL_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ASL_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b11010101;
     EXPECT_TRUE(cpu.Execute(5));
     EXPECT_EQ(cpu.Mem[0x24], 0b10101010);
@@ -234,8 +270,10 @@ TEST(CPUEMU, CPU_ASL_ZP){
 }
 
 TEST(CPUEMU, CPU_ASL_ZPX){
-    cpu.Mem[0xFFFC] = ASL_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ASL_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0b11010101;
     cpu.X = 0x02;
     EXPECT_TRUE(cpu.Execute(6));
@@ -246,8 +284,10 @@ TEST(CPUEMU, CPU_ASL_ZPX){
 }
 
 TEST(CPUEMU, CPU_ASL_ABS){
-    cpu.Mem[0xFFFC] = ASL_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ASL_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b11010101;
     EXPECT_TRUE(cpu.Execute(6));
     EXPECT_EQ(cpu.Mem[0x24], 0b10101010);
@@ -256,9 +296,11 @@ TEST(CPUEMU, CPU_ASL_ABS){
 }
 
 TEST(CPUEMU, CPU_ASL_ABSX){
-    cpu.Mem[0xFFFC] = ASL_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ASL_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0b01010101;
     cpu.X = 2;
     EXPECT_TRUE(cpu.Execute(7));
@@ -268,34 +310,42 @@ TEST(CPUEMU, CPU_ASL_ABSX){
 }
 
 TEST(CPUEMU, CPU_BCC){
-    cpu.Mem[0xFFFC] = BCC;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BCC;
+    cpu.Mem[0x0201] = -10;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BCS){
-    cpu.Mem[0xFFFC] = BCS;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BCS;
+    cpu.Mem[0x0201] = -10;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BEQ){
-    cpu.Mem[0xFFFC] = BEQ;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BEQ;
+    cpu.Mem[0x0201] = -10;
     cpu.Z = 1;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BIT_ZP){
-    cpu.Mem[0xFFFC] = BIT_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BIT_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b10101010;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(3));
@@ -306,9 +356,11 @@ TEST(CPUEMU, CPU_BIT_ZP){
 }
 
 TEST(CPUEMU, CPU_BIT_ABS){
-    cpu.Mem[0xFFFC] = BIT_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BIT_ABS;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0b10101010;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(4));
@@ -319,34 +371,42 @@ TEST(CPUEMU, CPU_BIT_ABS){
 }
 
 TEST(CPUEMU, CPU_BMI){
-    cpu.Mem[0xFFFC] = BMI;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BMI;
+    cpu.Mem[0x0201] = -10;
     cpu.N = 1;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BNE){
-    cpu.Mem[0xFFFC] = BNE;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BNE;
+    cpu.Mem[0x0201] = -10;
     cpu.Z = 0;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BPL){
-    cpu.Mem[0xFFFC] = BPL;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BPL;
+    cpu.Mem[0x0201] = -10;
     cpu.N = 0;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BRK){
-    cpu.Mem[0xFFFC] = BRK;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BRK;
     cpu.Mem[0xFFFE] = 0x69;
     cpu.Mem[0xFFFF] = 0x96;
     EXPECT_TRUE(cpu.Execute(7));
@@ -357,25 +417,31 @@ TEST(CPUEMU, CPU_BRK){
 }
 
 TEST(CPUEMU, CPU_BVC){
-    cpu.Mem[0xFFFC] = BVC;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BVC;
+    cpu.Mem[0x0201] = -10;
     cpu.V = 0;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_BVS){
-    cpu.Mem[0xFFFC] = BVS;
-    cpu.Mem[0xFFFD] = -10;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BVS;
+    cpu.Mem[0x0201] = -10;
     cpu.V = 1;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.PC, 0xFFFE - 10);
+    EXPECT_EQ(cpu.PC, 0x0202 - 10);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_CLC){
-    cpu.Mem[0xFFFC] = CLC;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CLC;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.C, 0);
@@ -383,7 +449,9 @@ TEST(CPUEMU, CPU_CLC){
 }
 
 TEST(CPUEMU, CPU_CLD){
-    cpu.Mem[0xFFFC] = CLD;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CLD;
     cpu.D = 1;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.C, 0);
@@ -391,7 +459,9 @@ TEST(CPUEMU, CPU_CLD){
 }
 
 TEST(CPUEMU, CPU_CLI){
-    cpu.Mem[0xFFFC] = CLI;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CLI;
     cpu.I = 1;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.C, 0);
@@ -399,7 +469,9 @@ TEST(CPUEMU, CPU_CLI){
 }
 
 TEST(CPUEMU, CPU_CLV){
-    cpu.Mem[0xFFFC] = CLV;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CLV;
     cpu.V = 1;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.C, 0);
@@ -407,24 +479,30 @@ TEST(CPUEMU, CPU_CLV){
 }
 
 TEST(CPUEMU, CPU_CMP_IM){
-    cpu.Mem[0xFFFC] = CMP_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.A = 0x23;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 0);
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.A = 0x24;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 1);
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.A = 0x25;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 0);
@@ -434,8 +512,10 @@ TEST(CPUEMU, CPU_CMP_IM){
 }
 
 TEST(CPUEMU, CPU_CMP_ZP){
-    cpu.Mem[0xFFFC] = CMP_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 0x47;
     EXPECT_TRUE(cpu.Execute(3));
@@ -443,8 +523,10 @@ TEST(CPUEMU, CPU_CMP_ZP){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
@@ -452,8 +534,10 @@ TEST(CPUEMU, CPU_CMP_ZP){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 0x49;
     EXPECT_TRUE(cpu.Execute(3));
@@ -464,8 +548,10 @@ TEST(CPUEMU, CPU_CMP_ZP){
 }
 
 TEST(CPUEMU, CPU_CMP_ZPX){
-    cpu.Mem[0xFFFC] = CMP_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     cpu.A = 0x47;
@@ -474,8 +560,10 @@ TEST(CPUEMU, CPU_CMP_ZPX){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     cpu.A = 0x48;
@@ -484,8 +572,10 @@ TEST(CPUEMU, CPU_CMP_ZPX){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     cpu.A = 0x49;
@@ -497,8 +587,10 @@ TEST(CPUEMU, CPU_CMP_ZPX){
 }
 
 TEST(CPUEMU, CPU_CMP_ABS){
-    cpu.Mem[0xFFFC] = CMP_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 0x47;
     EXPECT_TRUE(cpu.Execute(4));
@@ -506,8 +598,10 @@ TEST(CPUEMU, CPU_CMP_ABS){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
@@ -515,8 +609,10 @@ TEST(CPUEMU, CPU_CMP_ABS){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.A = 0x49;
     EXPECT_TRUE(cpu.Execute(4));
@@ -527,9 +623,11 @@ TEST(CPUEMU, CPU_CMP_ABS){
 }
 
 TEST(CPUEMU, CPU_CMP_ABSX){
-    cpu.Mem[0xFFFC] = CMP_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     cpu.A = 0x47;
@@ -538,9 +636,11 @@ TEST(CPUEMU, CPU_CMP_ABSX){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     cpu.A = 0x48;
@@ -549,9 +649,11 @@ TEST(CPUEMU, CPU_CMP_ABSX){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     cpu.A = 0x49;
@@ -563,9 +665,11 @@ TEST(CPUEMU, CPU_CMP_ABSX){
 }
 
 TEST(CPUEMU, CPU_CMP_ABSY){
-    cpu.Mem[0xFFFC] = CMP_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
     cpu.A = 0x47;
@@ -574,9 +678,11 @@ TEST(CPUEMU, CPU_CMP_ABSY){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
     cpu.A = 0x48;
@@ -585,9 +691,11 @@ TEST(CPUEMU, CPU_CMP_ABSY){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
     cpu.A = 0x49;
@@ -599,9 +707,11 @@ TEST(CPUEMU, CPU_CMP_ABSY){
 }
 
 TEST(CPUEMU, CPU_CMP_INDX){
-    cpu.Mem[0xFFFC] = CMP_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x69;
@@ -611,9 +721,11 @@ TEST(CPUEMU, CPU_CMP_INDX){
     EXPECT_EQ(cpu.Z, 0);
     EXPECT_EQ(cpu.C, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x69;
@@ -623,9 +735,11 @@ TEST(CPUEMU, CPU_CMP_INDX){
     EXPECT_EQ(cpu.Z, 1);
     EXPECT_EQ(cpu.C, 1);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x69;
@@ -638,9 +752,11 @@ TEST(CPUEMU, CPU_CMP_INDX){
 }
 
 TEST(CPUEMU, CPU_CMP_INDY){
-    cpu.Mem[0xFFFC] = CMP_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x69;
@@ -650,9 +766,11 @@ TEST(CPUEMU, CPU_CMP_INDY){
     EXPECT_EQ(cpu.Z, 0);
     EXPECT_EQ(cpu.C, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x69;
@@ -662,9 +780,11 @@ TEST(CPUEMU, CPU_CMP_INDY){
     EXPECT_EQ(cpu.Z, 1);
     EXPECT_EQ(cpu.C, 1);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CMP_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CMP_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x69;
@@ -677,24 +797,30 @@ TEST(CPUEMU, CPU_CMP_INDY){
 }
 
 TEST(CPUEMU, CPU_CPX_IM){
-    cpu.Mem[0xFFFC] = CPX_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x23;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 0);
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPX_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x24;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 1);
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPX_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x25;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 0);
@@ -704,8 +830,10 @@ TEST(CPUEMU, CPU_CPX_IM){
 }
 
 TEST(CPUEMU, CPU_CPX_ZP){
-    cpu.Mem[0xFFFC] = CPX_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.X = 0x47;
     EXPECT_TRUE(cpu.Execute(3));
@@ -713,8 +841,10 @@ TEST(CPUEMU, CPU_CPX_ZP){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPX_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.X = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
@@ -722,8 +852,10 @@ TEST(CPUEMU, CPU_CPX_ZP){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPX_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.X = 0x49;
     EXPECT_TRUE(cpu.Execute(3));
@@ -734,8 +866,10 @@ TEST(CPUEMU, CPU_CPX_ZP){
 }
 
 TEST(CPUEMU, CPU_CPX_ABS){
-    cpu.Mem[0xFFFC] = CPX_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.X = 0x47;
     EXPECT_TRUE(cpu.Execute(4));
@@ -743,8 +877,10 @@ TEST(CPUEMU, CPU_CPX_ABS){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPX_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.X = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
@@ -752,8 +888,10 @@ TEST(CPUEMU, CPU_CPX_ABS){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPX_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPX_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.X = 0x49;
     EXPECT_TRUE(cpu.Execute(4));
@@ -764,24 +902,30 @@ TEST(CPUEMU, CPU_CPX_ABS){
 }
 
 TEST(CPUEMU, CPU_CPY_IM){
-    cpu.Mem[0xFFFC] = CPY_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Y = 0x23;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 0);
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPY_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Y = 0x24;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 1);
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPY_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_IM;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Y = 0x25;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Z, 0);
@@ -791,8 +935,10 @@ TEST(CPUEMU, CPU_CPY_IM){
 }
 
 TEST(CPUEMU, CPU_CPY_ZP){
-    cpu.Mem[0xFFFC] = CPY_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.Y = 0x47;
     EXPECT_TRUE(cpu.Execute(3));
@@ -800,8 +946,10 @@ TEST(CPUEMU, CPU_CPY_ZP){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPY_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.Y = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
@@ -809,8 +957,10 @@ TEST(CPUEMU, CPU_CPY_ZP){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPY_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.Y = 0x49;
     EXPECT_TRUE(cpu.Execute(3));
@@ -821,8 +971,10 @@ TEST(CPUEMU, CPU_CPY_ZP){
 }
 
 TEST(CPUEMU, CPU_CPY_ABS){
-    cpu.Mem[0xFFFC] = CPY_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.Y = 0x47;
     EXPECT_TRUE(cpu.Execute(4));
@@ -830,8 +982,10 @@ TEST(CPUEMU, CPU_CPY_ABS){
     EXPECT_EQ(cpu.C, 0);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPY_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.Y = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
@@ -839,8 +993,10 @@ TEST(CPUEMU, CPU_CPY_ABS){
     EXPECT_EQ(cpu.C, 1);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
-    cpu.Mem[0xFFFC] = CPY_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = CPY_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     cpu.Y = 0x49;
     EXPECT_TRUE(cpu.Execute(4));
@@ -851,8 +1007,10 @@ TEST(CPUEMU, CPU_CPY_ABS){
 }
 
 TEST(CPUEMU, CPU_DEC_ZP){
-    cpu.Mem[0xFFFC] = DEC_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = DEC_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(5));
     EXPECT_EQ(cpu.Mem[0x24], 0x47);
@@ -861,8 +1019,10 @@ TEST(CPUEMU, CPU_DEC_ZP){
 }
 
 TEST(CPUEMU, CPU_DEC_ZPX){
-    cpu.Mem[0xFFFC] = DEC_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = DEC_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     EXPECT_TRUE(cpu.Execute(6));
@@ -872,8 +1032,10 @@ TEST(CPUEMU, CPU_DEC_ZPX){
 }
 
 TEST(CPUEMU, CPU_DEC_ABS){
-    cpu.Mem[0xFFFC] = DEC_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = DEC_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(6));
     EXPECT_EQ(cpu.Mem[0x24], 0x47);
@@ -882,9 +1044,11 @@ TEST(CPUEMU, CPU_DEC_ABS){
 }
 
 TEST(CPUEMU, CPU_DEC_ABSX){
-    cpu.Mem[0xFFFC] = DEC_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = DEC_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     EXPECT_TRUE(cpu.Execute(7));
@@ -894,7 +1058,9 @@ TEST(CPUEMU, CPU_DEC_ABSX){
 }
 
 TEST(CPUEMU, CPU_DEX){
-    cpu.Mem[0xFFFC] = DEX;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = DEX;
     cpu.X = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.X, 0x68);
@@ -903,7 +1069,9 @@ TEST(CPUEMU, CPU_DEX){
 }
 
 TEST(CPUEMU, CPU_DEY){
-    cpu.Mem[0xFFFC] = DEY;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = DEY;
     cpu.Y = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Y, 0x68);
@@ -912,8 +1080,10 @@ TEST(CPUEMU, CPU_DEY){
 }
 
 TEST(CPUEMU, CPU_EOR_IM){
-    cpu.Mem[0xFFFC] = EOR_IM;
-    cpu.Mem[0xFFFD] = 0b00000101;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_IM;
+    cpu.Mem[0x0201] = 0b00000101;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0b01010000);
@@ -922,8 +1092,10 @@ TEST(CPUEMU, CPU_EOR_IM){
 }
 
 TEST(CPUEMU, CPU_EOR_ZP){
-    cpu.Mem[0xFFFC] = EOR_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b00000101;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(3));
@@ -933,8 +1105,10 @@ TEST(CPUEMU, CPU_EOR_ZP){
 }
 
 TEST(CPUEMU, CPU_EOR_ZPX){
-    cpu.Mem[0xFFFC] = EOR_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0b00000101;
     cpu.X = 0x02;
     cpu.A = 0b01010101;
@@ -945,8 +1119,10 @@ TEST(CPUEMU, CPU_EOR_ZPX){
 }
 
 TEST(CPUEMU, CPU_EOR_ABS){
-    cpu.Mem[0xFFFC] = EOR_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b00000101;
     cpu.A = 0b01010101;
     EXPECT_TRUE(cpu.Execute(4));
@@ -956,9 +1132,11 @@ TEST(CPUEMU, CPU_EOR_ABS){
 }
 
 TEST(CPUEMU, CPU_EOR_ABSX){
-    cpu.Mem[0xFFFC] = EOR_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0b00000101;
     cpu.X = 2;
     cpu.A = 0b01010101;
@@ -969,9 +1147,11 @@ TEST(CPUEMU, CPU_EOR_ABSX){
 }
 
 TEST(CPUEMU, CPU_EOR_ABSY){
-    cpu.Mem[0xFFFC] = EOR_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0b00000101;
     cpu.Y = 2;
     cpu.A = 0b01010101;
@@ -982,9 +1162,11 @@ TEST(CPUEMU, CPU_EOR_ABSY){
 }
 
 TEST(CPUEMU, CPU_EOR_INDX){
-    cpu.Mem[0xFFFC] = EOR_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0b00000101;
@@ -996,9 +1178,11 @@ TEST(CPUEMU, CPU_EOR_INDX){
 }
 
 TEST(CPUEMU, CPU_EOR_INDY){
-    cpu.Mem[0xFFFC] = EOR_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = EOR_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0b00000101;
@@ -1010,8 +1194,10 @@ TEST(CPUEMU, CPU_EOR_INDY){
 }
 
 TEST(CPUEMU, CPU_INC_ZP){
-    cpu.Mem[0xFFFC] = INC_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = INC_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(5));
     EXPECT_EQ(cpu.Mem[0x24], 0x49);
@@ -1020,8 +1206,10 @@ TEST(CPUEMU, CPU_INC_ZP){
 }
 
 TEST(CPUEMU, CPU_INC_ZPX){
-    cpu.Mem[0xFFFC] = INC_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = INC_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     EXPECT_TRUE(cpu.Execute(6));
@@ -1031,8 +1219,10 @@ TEST(CPUEMU, CPU_INC_ZPX){
 }
 
 TEST(CPUEMU, CPU_INC_ABS){
-    cpu.Mem[0xFFFC] = INC_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = INC_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(6));
     EXPECT_EQ(cpu.Mem[0x24], 0x49);
@@ -1041,9 +1231,11 @@ TEST(CPUEMU, CPU_INC_ABS){
 }
 
 TEST(CPUEMU, CPU_INC_ABSX){
-    cpu.Mem[0xFFFC] = INC_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = INC_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     EXPECT_TRUE(cpu.Execute(7));
@@ -1053,7 +1245,9 @@ TEST(CPUEMU, CPU_INC_ABSX){
 }
 
 TEST(CPUEMU, CPU_INX){
-    cpu.Mem[0xFFFC] = INX;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = INX;
     cpu.X = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.X, 0x6A);
@@ -1062,7 +1256,9 @@ TEST(CPUEMU, CPU_INX){
 }
 
 TEST(CPUEMU, CPU_INY){
-    cpu.Mem[0xFFFC] = INY;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = INY;
     cpu.Y = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Y, 0x6A);
@@ -1071,18 +1267,22 @@ TEST(CPUEMU, CPU_INY){
 }
 
 TEST(CPUEMU, CPU_JMP_ABS){
-    cpu.Mem[0xFFFC] = JMP_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = JMP_ABS;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.PC, 0x0224);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_JMP_IND){
-    cpu.Mem[0xFFFC] = JMP_IND;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = JMP_IND;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x69;
     cpu.Mem[0x0225] = 0x96;
     EXPECT_TRUE(cpu.Execute(5));
@@ -1091,8 +1291,10 @@ TEST(CPUEMU, CPU_JMP_IND){
 }
 
 TEST(CPUEMU, CPU_LDA_IM){
-    cpu.Mem[0xFFFC] = LDA_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_IM;
+    cpu.Mem[0x0201] = 0x24;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0x24);
     EXPECT_EQ(cpu.TotalCycles, 0);
@@ -1100,8 +1302,10 @@ TEST(CPUEMU, CPU_LDA_IM){
 }
 
 TEST(CPUEMU, CPU_LDA_ZP){
-    cpu.Mem[0xFFFC] = LDA_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.A, 0x48);
@@ -1110,8 +1314,10 @@ TEST(CPUEMU, CPU_LDA_ZP){
 }
 
 TEST(CPUEMU, CPU_LDA_ZPX){
-    cpu.Mem[0xFFFC] = LDA_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1121,8 +1327,10 @@ TEST(CPUEMU, CPU_LDA_ZPX){
 }
 
 TEST(CPUEMU, CPU_LDA_ABS){
-    cpu.Mem[0xFFFC] = LDA_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
     EXPECT_EQ(cpu.A, 0x48);
@@ -1131,9 +1339,11 @@ TEST(CPUEMU, CPU_LDA_ABS){
 }
 
 TEST(CPUEMU, CPU_LDA_ABSX){
-    cpu.Mem[0xFFFC] = LDA_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1143,9 +1353,11 @@ TEST(CPUEMU, CPU_LDA_ABSX){
 }
 
 TEST(CPUEMU, CPU_LDA_ABSY){
-    cpu.Mem[0xFFFC] = LDA_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1155,9 +1367,11 @@ TEST(CPUEMU, CPU_LDA_ABSY){
 }
 
 TEST(CPUEMU, CPU_LDA_INDX){
-    cpu.Mem[0xFFFC] = LDA_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x69;
@@ -1168,9 +1382,11 @@ TEST(CPUEMU, CPU_LDA_INDX){
 }
 
 TEST(CPUEMU, CPU_LDA_INDY){
-    cpu.Mem[0xFFFC] = LDA_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDA_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x69;
@@ -1181,8 +1397,10 @@ TEST(CPUEMU, CPU_LDA_INDY){
 }
 
 TEST(CPUEMU, CPU_LDX_IM){
-    cpu.Mem[0xFFFC] = LDX_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDX_IM;
+    cpu.Mem[0x0201] = 0x24;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.X, 0x24);
     EXPECT_EQ(cpu.TotalCycles, 0);
@@ -1190,8 +1408,10 @@ TEST(CPUEMU, CPU_LDX_IM){
 }
 
 TEST(CPUEMU, CPU_LDX_ZP){
-    cpu.Mem[0xFFFC] = LDX_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDX_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.X, 0x48);
@@ -1200,8 +1420,10 @@ TEST(CPUEMU, CPU_LDX_ZP){
 }
 
 TEST(CPUEMU, CPU_LDX_ZPY){
-    cpu.Mem[0xFFFC] = LDX_ZPY;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDX_ZPY;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.Y = 0x02;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1211,8 +1433,10 @@ TEST(CPUEMU, CPU_LDX_ZPY){
 }
 
 TEST(CPUEMU, CPU_LDX_ABS){
-    cpu.Mem[0xFFFC] = LDX_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDX_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
     EXPECT_EQ(cpu.X, 0x48);
@@ -1221,9 +1445,11 @@ TEST(CPUEMU, CPU_LDX_ABS){
 }
 
 TEST(CPUEMU, CPU_LDX_ABSY){
-    cpu.Mem[0xFFFC] = LDX_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDX_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1233,8 +1459,10 @@ TEST(CPUEMU, CPU_LDX_ABSY){
 }
 
 TEST(CPUEMU, CPU_LDY_IM){
-    cpu.Mem[0xFFFC] = LDY_IM;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDY_IM;
+    cpu.Mem[0x0201] = 0x24;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Y, 0x24);
     EXPECT_EQ(cpu.TotalCycles, 0);
@@ -1242,8 +1470,10 @@ TEST(CPUEMU, CPU_LDY_IM){
 }
 
 TEST(CPUEMU, CPU_LDY_ZP){
-    cpu.Mem[0xFFFC] = LDY_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDY_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.Y, 0x48);
@@ -1252,8 +1482,10 @@ TEST(CPUEMU, CPU_LDY_ZP){
 }
 
 TEST(CPUEMU, CPU_LDY_ZPX){
-    cpu.Mem[0xFFFC] = LDY_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDY_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1263,8 +1495,10 @@ TEST(CPUEMU, CPU_LDY_ZPX){
 }
 
 TEST(CPUEMU, CPU_LDY_ABS){
-    cpu.Mem[0xFFFC] = LDY_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDY_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
     EXPECT_EQ(cpu.Y, 0x48);
@@ -1273,9 +1507,11 @@ TEST(CPUEMU, CPU_LDY_ABS){
 }
 
 TEST(CPUEMU, CPU_LDY_ABSX){
-    cpu.Mem[0xFFFC] = LDY_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = LDY_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1285,16 +1521,20 @@ TEST(CPUEMU, CPU_LDY_ABSX){
 }
 
 TEST(CPUEMU, CPU_NOP){
-    cpu.Mem[0xFFFC] = NOP;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = NOP;
     cpu.Execute(2);
-    EXPECT_EQ(cpu.PC, 0xFFFD);
+    EXPECT_EQ(cpu.PC, 0x0201);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_ORA_IM){
-    cpu.Mem[0xFFFC] = ORA_IM;
+    cpu.Mem[0xFFFC] = 0x00;
     cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_IM;
+    cpu.Mem[0x0201] = 0x02;
     cpu.A = 0x55;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0x57);
@@ -1303,8 +1543,10 @@ TEST(CPUEMU, CPU_ORA_IM){
 }
 
 TEST(CPUEMU, CPU_ORA_ZP){
-    cpu.Mem[0xFFFC] = ORA_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x02;
     cpu.A = 0x55;
     EXPECT_TRUE(cpu.Execute(3));
@@ -1314,8 +1556,10 @@ TEST(CPUEMU, CPU_ORA_ZP){
 }
 
 TEST(CPUEMU, CPU_ORA_ZPX){
-    cpu.Mem[0xFFFC] = ORA_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x02;
     cpu.X = 0x02;
     cpu.A = 0x55;
@@ -1326,8 +1570,10 @@ TEST(CPUEMU, CPU_ORA_ZPX){
 }
 
 TEST(CPUEMU, CPU_ORA_ABS){
-    cpu.Mem[0xFFFC] = ORA_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x02;
     cpu.A = 0x55;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1337,9 +1583,11 @@ TEST(CPUEMU, CPU_ORA_ABS){
 }
 
 TEST(CPUEMU, CPU_ORA_ABSX){
-    cpu.Mem[0xFFFC] = ORA_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x02;
     cpu.X = 0x02;
     cpu.A = 0x55;
@@ -1350,9 +1598,11 @@ TEST(CPUEMU, CPU_ORA_ABSX){
 }
 
 TEST(CPUEMU, CPU_ORA_ABSY){
-    cpu.Mem[0xFFFC] = ORA_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x02;
     cpu.Y = 0x02;
     cpu.A = 0x55;
@@ -1363,9 +1613,11 @@ TEST(CPUEMU, CPU_ORA_ABSY){
 }
 
 TEST(CPUEMU, CPU_ORA_INDX){
-    cpu.Mem[0xFFFC] = ORA_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x02;
@@ -1377,9 +1629,11 @@ TEST(CPUEMU, CPU_ORA_INDX){
 }
 
 TEST(CPUEMU, CPU_ORA_INDY){
-    cpu.Mem[0xFFFC] = ORA_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ORA_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x02;
@@ -1391,7 +1645,9 @@ TEST(CPUEMU, CPU_ORA_INDY){
 }
 
 TEST(CPUEMU, CPU_PHA){
-    cpu.Mem[0xFFFC] = PHA;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = PHA;
     cpu.SP = 0x01FF;
     cpu.A = 0x69;
     EXPECT_TRUE(cpu.Execute(3));
@@ -1401,7 +1657,9 @@ TEST(CPUEMU, CPU_PHA){
 }
 
 TEST(CPUEMU, CPU_PHP){
-    cpu.Mem[0xFFFC] = PHP;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = PHP;
     cpu.C = 0;
     cpu.Z = 1;
     cpu.I = 0;
@@ -1416,8 +1674,10 @@ TEST(CPUEMU, CPU_PHP){
 }
 
 TEST(CPUEMU, CPU_PLA){
-    cpu.Mem[0xFFFC] = PHA;
-    cpu.Mem[0xFFFD] = PLA;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = PHA;
+    cpu.Mem[0x0201] = PLA;
     cpu.SP = 0x01FF;
     cpu.A = 0x69;
     cpu.Execute(3);
@@ -1429,8 +1689,10 @@ TEST(CPUEMU, CPU_PLA){
 }
 
 TEST(CPUEMU, CPU_PLP){
-    cpu.Mem[0xFFFC] = PHP;
-    cpu.Mem[0xFFFD] = PLP;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = PHP;
+    cpu.Mem[0x0201] = PLP;
     cpu.C = 0;
     cpu.Z = 1;
     cpu.I = 0;
@@ -1453,7 +1715,9 @@ TEST(CPUEMU, CPU_PLP){
 }
 
 TEST(CPUEMU, CPU_ROL_AC){
-    cpu.Mem[0xFFFC] = ROL_AC;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROL_AC;
     cpu.A = 0b01010101;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(2));
@@ -1462,8 +1726,10 @@ TEST(CPUEMU, CPU_ROL_AC){
 }
 
 TEST(CPUEMU, CPU_ROL_ZP){
-    cpu.Mem[0xFFFC] = ROL_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROL_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b01010101;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(5));
@@ -1472,8 +1738,10 @@ TEST(CPUEMU, CPU_ROL_ZP){
 }
 
 TEST(CPUEMU, CPU_ROL_ZPX){
-    cpu.Mem[0xFFFC] = ROL_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROL_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x2A] = 0b01010101;
     cpu.C = 1;
     cpu.X = 6;
@@ -1483,9 +1751,11 @@ TEST(CPUEMU, CPU_ROL_ZPX){
 }
 
 TEST(CPUEMU, CPU_ROL_ABS){
-    cpu.Mem[0xFFFC] = ROL_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROL_ABS;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0b01010101;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(6));
@@ -1494,9 +1764,11 @@ TEST(CPUEMU, CPU_ROL_ABS){
 }
 
 TEST(CPUEMU, CPU_ROL_ABSX){
-    cpu.Mem[0xFFFC] = ROL_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROL_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x022A] = 0b01010101;
     cpu.C = 1;
     cpu.X = 6;
@@ -1506,7 +1778,9 @@ TEST(CPUEMU, CPU_ROL_ABSX){
 }
 
 TEST(CPUEMU, CPU_ROR_AC){
-    cpu.Mem[0xFFFC] = ROR_AC;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROR_AC;
     cpu.A = 0b10101010;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(2));
@@ -1515,8 +1789,10 @@ TEST(CPUEMU, CPU_ROR_AC){
 }
 
 TEST(CPUEMU, CPU_ROR_ZP){
-    cpu.Mem[0xFFFC] = ROR_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROR_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0b10101010;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(5));
@@ -1525,8 +1801,10 @@ TEST(CPUEMU, CPU_ROR_ZP){
 }
 
 TEST(CPUEMU, CPU_ROR_ZPX){
-    cpu.Mem[0xFFFC] = ROR_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROR_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x2A] = 0b10101010;
     cpu.C = 1;
     cpu.X = 6;
@@ -1536,9 +1814,11 @@ TEST(CPUEMU, CPU_ROR_ZPX){
 }
 
 TEST(CPUEMU, CPU_ROR_ABS){
-    cpu.Mem[0xFFFC] = ROR_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROR_ABS;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0b10101010;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(6));
@@ -1547,9 +1827,11 @@ TEST(CPUEMU, CPU_ROR_ABS){
 }
 
 TEST(CPUEMU, CPU_ROR_ABSX){
-    cpu.Mem[0xFFFC] = ROR_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = ROR_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x022A] = 0b10101010;
     cpu.C = 1;
     cpu.X = 6;
@@ -1559,19 +1841,23 @@ TEST(CPUEMU, CPU_ROR_ABSX){
 }
 
 TEST(CPUEMU, CPU_RTI){
-    cpu.Mem[0xFFFC] = BRK;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = BRK;
     cpu.Mem[0xFFFE] = 0x24;
     cpu.Mem[0xFFFF] = 0x02;
     cpu.Mem[0x0224] = RTI;
     EXPECT_TRUE(cpu.Execute(13));
     EXPECT_EQ(cpu.SP, 0x01FF);
-    EXPECT_EQ(cpu.PC, 0xFFFD);
+    EXPECT_EQ(cpu.PC, 0x0201);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_SBC_IM){
-    cpu.Mem[0xFFFC] = SBC_IM;
+    cpu.Mem[0xFFFC] = 0x00;
     cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_IM;
+    cpu.Mem[0x0201] = 0x02;
     cpu.A = 0x24;
     cpu.C = 1;
     EXPECT_TRUE(cpu.Execute(2));
@@ -1581,8 +1867,10 @@ TEST(CPUEMU, CPU_SBC_IM){
 }
 
 TEST(CPUEMU, CPU_SBC_ZP){
-    cpu.Mem[0xFFFC] = SBC_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x02;
     cpu.A = 0x48;
     cpu.C = 1;
@@ -1593,8 +1881,10 @@ TEST(CPUEMU, CPU_SBC_ZP){
 }
 
 TEST(CPUEMU, CPU_SBC_ZPX){
-    cpu.Mem[0xFFFC] = SBC_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x26] = 0x02;
     cpu.X = 0x02;
     cpu.A = 0x48;
@@ -1606,8 +1896,10 @@ TEST(CPUEMU, CPU_SBC_ZPX){
 }
 
 TEST(CPUEMU, CPU_SBC_ABS){
-    cpu.Mem[0xFFFC] = SBC_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Mem[0x24] = 0x02;
     cpu.A = 0x48;
     cpu.C = 1;
@@ -1618,9 +1910,11 @@ TEST(CPUEMU, CPU_SBC_ABS){
 }
 
 TEST(CPUEMU, CPU_SBC_ABSX){
-    cpu.Mem[0xFFFC] = SBC_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x02;
     cpu.X = 2;
     cpu.A = 0x48;
@@ -1632,9 +1926,11 @@ TEST(CPUEMU, CPU_SBC_ABSX){
 }
 
 TEST(CPUEMU, CPU_SBC_ABSY){
-    cpu.Mem[0xFFFC] = SBC_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x02;
     cpu.Y = 2;
     cpu.A = 0x48;
@@ -1646,9 +1942,11 @@ TEST(CPUEMU, CPU_SBC_ABSY){
 }
 
 TEST(CPUEMU, CPU_SBC_INDX){
-    cpu.Mem[0xFFFC] = SBC_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.Mem[0x0504] = 0x02;
@@ -1661,9 +1959,11 @@ TEST(CPUEMU, CPU_SBC_INDX){
 }
 
 TEST(CPUEMU, CPU_SBC_INDY){
-    cpu.Mem[0xFFFC] = SBC_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SBC_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Mem[0x0506] = 0x02;
@@ -1676,29 +1976,37 @@ TEST(CPUEMU, CPU_SBC_INDY){
 }
 
 TEST(CPUEMU, CPU_SEC){
-    cpu.Mem[0xFFFC] = SEC;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SEC;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.C, 1);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_SED){
-    cpu.Mem[0xFFFC] = SED;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SED;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.D, 1);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_SEI){
-    cpu.Mem[0xFFFC] = SEI;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = SEI;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.I, 1);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_ZP){
-    cpu.Mem[0xFFFC] = STA_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.Mem[0x24], 0x48);
@@ -1707,8 +2015,10 @@ TEST(CPUEMU, CPU_STA_ZP){
 }
 
 TEST(CPUEMU, CPU_STA_ZPX){
-    cpu.Mem[0xFFFC] = STA_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x02;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1718,8 +2028,10 @@ TEST(CPUEMU, CPU_STA_ZPX){
 }
 
 TEST(CPUEMU, CPU_STA_ABS){
-    cpu.Mem[0xFFFC] = STA_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
     EXPECT_EQ(cpu.Mem[0x24], 0x48);
@@ -1728,9 +2040,11 @@ TEST(CPUEMU, CPU_STA_ABS){
 }
 
 TEST(CPUEMU, CPU_STA_ABSX){
-    cpu.Mem[0xFFFC] = STA_ABSX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_ABSX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.X = 2;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(5));
@@ -1740,9 +2054,11 @@ TEST(CPUEMU, CPU_STA_ABSX){
 }
 
 TEST(CPUEMU, CPU_STA_ABSY){
-    cpu.Mem[0xFFFC] = STA_ABSY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_ABSY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Y = 2;
     cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(5));
@@ -1752,9 +2068,11 @@ TEST(CPUEMU, CPU_STA_ABSY){
 }
 
 TEST(CPUEMU, CPU_STA_INDX){
-    cpu.Mem[0xFFFC] = STA_INDX;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_INDX;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
     cpu.X = 2;
@@ -1765,9 +2083,11 @@ TEST(CPUEMU, CPU_STA_INDX){
 }
 
 TEST(CPUEMU, CPU_STA_INDY){
-    cpu.Mem[0xFFFC] = STA_INDY;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STA_INDY;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
     cpu.Y = 2;
@@ -1778,8 +2098,10 @@ TEST(CPUEMU, CPU_STA_INDY){
 }
 
 TEST(CPUEMU, CPU_STX_ZP){
-    cpu.Mem[0xFFFC] = STX_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STX_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.Mem[0x24], 0x48);
@@ -1788,8 +2110,10 @@ TEST(CPUEMU, CPU_STX_ZP){
 }
 
 TEST(CPUEMU, CPU_STX_ZPY){
-    cpu.Mem[0xFFFC] = STX_ZPY;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STX_ZPY;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Y = 0x02;
     cpu.X = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1799,8 +2123,10 @@ TEST(CPUEMU, CPU_STX_ZPY){
 }
 
 TEST(CPUEMU, CPU_STX_ABS){
-    cpu.Mem[0xFFFC] = STX_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STX_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
     EXPECT_EQ(cpu.Mem[0x24], 0x48);
@@ -1809,8 +2135,10 @@ TEST(CPUEMU, CPU_STX_ABS){
 }
 
 TEST(CPUEMU, CPU_STY_ZP){
-    cpu.Mem[0xFFFC] = STY_ZP;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STY_ZP;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Y = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
     EXPECT_EQ(cpu.Mem[0x24], 0x48);
@@ -1819,8 +2147,10 @@ TEST(CPUEMU, CPU_STY_ZP){
 }
 
 TEST(CPUEMU, CPU_STY_ZPX){
-    cpu.Mem[0xFFFC] = STY_ZPX;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STY_ZPX;
+    cpu.Mem[0x0201] = 0x24;
     cpu.X = 0x02;
     cpu.Y = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
@@ -1830,8 +2160,10 @@ TEST(CPUEMU, CPU_STY_ZPX){
 }
 
 TEST(CPUEMU, CPU_STY_ABS){
-    cpu.Mem[0xFFFC] = STY_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = STY_ABS;
+    cpu.Mem[0x0201] = 0x24;
     cpu.Y = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
     EXPECT_EQ(cpu.Mem[0x24], 0x48);
@@ -1840,7 +2172,9 @@ TEST(CPUEMU, CPU_STY_ABS){
 }
 
 TEST(CPUEMU, CPU_TAX){
-    cpu.Mem[0xFFFC] = TAX;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = TAX;
     cpu.A = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.X, 0x69);
@@ -1848,7 +2182,9 @@ TEST(CPUEMU, CPU_TAX){
 }
 
 TEST(CPUEMU, CPU_TAY){
-    cpu.Mem[0xFFFC] = TAY;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = TAY;
     cpu.A = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.Y, 0x69);
@@ -1856,7 +2192,9 @@ TEST(CPUEMU, CPU_TAY){
 }
 
 TEST(CPUEMU, CPU_TSX){
-    cpu.Mem[0xFFFC] = TSX;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = TSX;
     cpu.SP = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.X, 0x69);
@@ -1864,7 +2202,9 @@ TEST(CPUEMU, CPU_TSX){
 }
 
 TEST(CPUEMU, CPU_TXA){
-    cpu.Mem[0xFFFC] = TXA;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = TXA;
     cpu.X = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0x69);
@@ -1872,7 +2212,9 @@ TEST(CPUEMU, CPU_TXA){
 }
 
 TEST(CPUEMU, CPU_TXS){
-    cpu.Mem[0xFFFC] = TXS;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = TXS;
     cpu.X = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.SP, 0x69);
@@ -1880,7 +2222,9 @@ TEST(CPUEMU, CPU_TXS){
 }
 
 TEST(CPUEMU, CPU_TYA){
-    cpu.Mem[0xFFFC] = TYA;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = TYA;
     cpu.Y = 0x69;
     EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0x69);
@@ -1888,23 +2232,27 @@ TEST(CPUEMU, CPU_TYA){
 }
 
 TEST(CPUEMU, CPU_JSR_ABS){
-    cpu.Mem[0xFFFC] = JSR_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = JSR_ABS;
+    cpu.Mem[0x0201] = 0x24;
     EXPECT_TRUE(cpu.Execute(6));
     EXPECT_EQ(cpu.PC, 0x0024);
-    EXPECT_EQ(cpu.Mem[cpu.SP + 1], 0xFC);
-    EXPECT_EQ(cpu.Mem[cpu.SP + 2], 0xFF);
+    EXPECT_EQ(cpu.Mem[cpu.SP + 1], 0x00);
+    EXPECT_EQ(cpu.Mem[cpu.SP + 2], 0x02);
     EXPECT_EQ(cpu.SP, 0x01FD);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_RTS){
-    cpu.Mem[0xFFFC] = JSR_ABS;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
+    cpu.Mem[0xFFFC] = 0x00;
+    cpu.Mem[0xFFFD] = 0x02;
+    cpu.Mem[0x0200] = JSR_ABS;
+    cpu.Mem[0x0201] = 0x24;
+    cpu.Mem[0x0202] = 0x02;
     cpu.Mem[0x0224] = RTS;
     EXPECT_TRUE(cpu.Execute(12));
-    EXPECT_EQ(cpu.PC, 0xFFFC);
+    EXPECT_EQ(cpu.PC, 0x0200);
     EXPECT_EQ(cpu.SP, 0x01FF);
     cpu.Reset();
 }

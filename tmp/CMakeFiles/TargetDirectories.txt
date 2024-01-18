@@ -1,0 +1,5 @@
+/home/hyperwin/projects/6502Emulator/tmp/CMakeFiles/emulator.dir
+/home/hyperwin/projects/6502Emulator/tmp/CMakeFiles/tests.dir
+/home/hyperwin/projects/6502Emulator/tmp/CMakeFiles/romgen.dir
+/home/hyperwin/projects/6502Emulator/tmp/CMakeFiles/edit_cache.dir
+/home/hyperwin/projects/6502Emulator/tmp/CMakeFiles/rebuild_cache.dir
