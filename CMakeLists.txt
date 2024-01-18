@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
-project(6502Emulator)
+project(6502Emulator C CXX)
 add_executable(emulator cpu.cpp main.cpp)
 add_executable(tests cpu.cpp tests.cpp)
+add_executable(romgen genrom.c)
 target_link_libraries(tests gtest_main gtest pthread)
 add_custom_command(TARGET tests POST_BUILD COMMAND ./tests)
