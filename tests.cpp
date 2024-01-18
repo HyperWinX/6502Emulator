@@ -1697,82 +1697,192 @@ TEST(CPUEMU, CPU_SEI){
 }
 
 TEST(CPUEMU, CPU_STA_ZP){
-    cpu.Mem[0xFFFC] = LDA_ZP;
+    cpu.Mem[0xFFFC] = STA_ZP;
     cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0x24] = 0x48;
+    cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(3));
-    EXPECT_EQ(cpu.A, 0x48);
+    EXPECT_EQ(cpu.Mem[0x24], 0x48);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_ZPX){
-    cpu.Mem[0xFFFC] = LDA_ZPX;
+    cpu.Mem[0xFFFC] = STA_ZPX;
     cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0x26] = 0x48;
     cpu.X = 0x02;
+    cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
-    EXPECT_EQ(cpu.A, 0x48);
+    EXPECT_EQ(cpu.Mem[0x26], 0x48);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_ABS){
-    cpu.Mem[0xFFFC] = LDA_ABS;
+    cpu.Mem[0xFFFC] = STA_ABS;
     cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0x24] = 0x48;
+    cpu.A = 0x48;
     EXPECT_TRUE(cpu.Execute(4));
-    EXPECT_EQ(cpu.A, 0x48);
+    EXPECT_EQ(cpu.Mem[0x24], 0x48);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_ABSX){
-    cpu.Mem[0xFFFC] = LDA_ABSX;
+    cpu.Mem[0xFFFC] = STA_ABSX;
     cpu.Mem[0xFFFD] = 0x24;
     cpu.Mem[0xFFFE] = 0x02;
-    cpu.Mem[0x0226] = 0x48;
     cpu.X = 2;
-    EXPECT_TRUE(cpu.Execute(4));
-    EXPECT_EQ(cpu.A, 0x48);
+    cpu.A = 0x48;
+    EXPECT_TRUE(cpu.Execute(5));
+    EXPECT_EQ(cpu.Mem[0x0226], 0x48);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_ABSY){
-    cpu.Mem[0xFFFC] = LDA_ABSY;
+    cpu.Mem[0xFFFC] = STA_ABSY;
     cpu.Mem[0xFFFD] = 0x24;
     cpu.Mem[0xFFFE] = 0x02;
-    cpu.Mem[0x0226] = 0x48;
     cpu.Y = 2;
-    EXPECT_TRUE(cpu.Execute(4));
-    EXPECT_EQ(cpu.A, 0x48);
+    cpu.A = 0x48;
+    EXPECT_TRUE(cpu.Execute(5));
+    EXPECT_EQ(cpu.Mem[0x0226], 0x48);
     EXPECT_EQ(cpu.TotalCycles, 0);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_INDX){
-    cpu.Mem[0xFFFC] = LDA_INDX;
+    cpu.Mem[0xFFFC] = STA_INDX;
     cpu.Mem[0xFFFD] = 0x24;
     cpu.Mem[0xFFFE] = 0x02;
     cpu.Mem[0x0226] = 0x04;
     cpu.Mem[0x0227] = 0x05;
-    cpu.Mem[0x0504] = 0x69;
     cpu.X = 2;
+    cpu.A = 0x69;
     EXPECT_TRUE(cpu.Execute(6));
-    EXPECT_EQ(cpu.A, 0x69);
+    EXPECT_EQ(cpu.Mem[0x0504], 0x69);
     cpu.Reset();
 }
 
 TEST(CPUEMU, CPU_STA_INDY){
-    cpu.Mem[0xFFFC] = LDA_INDY;
+    cpu.Mem[0xFFFC] = STA_INDY;
     cpu.Mem[0xFFFD] = 0x24;
     cpu.Mem[0xFFFE] = 0x02;
     cpu.Mem[0x0224] = 0x04;
     cpu.Mem[0x0225] = 0x05;
-    cpu.Mem[0x0506] = 0x69;
     cpu.Y = 2;
+    cpu.A = 0x69;
     EXPECT_TRUE(cpu.Execute(6));
+    EXPECT_EQ(cpu.Mem[0x0506], 0x69);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_STX_ZP){
+    cpu.Mem[0xFFFC] = STX_ZP;
+    cpu.Mem[0xFFFD] = 0x24;
+    cpu.X = 0x48;
+    EXPECT_TRUE(cpu.Execute(3));
+    EXPECT_EQ(cpu.Mem[0x24], 0x48);
+    EXPECT_EQ(cpu.TotalCycles, 0);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_STX_ZPY){
+    cpu.Mem[0xFFFC] = STX_ZPY;
+    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Y = 0x02;
+    cpu.X = 0x48;
+    EXPECT_TRUE(cpu.Execute(4));
+    EXPECT_EQ(cpu.Mem[0x26], 0x48);
+    EXPECT_EQ(cpu.TotalCycles, 0);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_STX_ABS){
+    cpu.Mem[0xFFFC] = STX_ABS;
+    cpu.Mem[0xFFFD] = 0x24;
+    cpu.X = 0x48;
+    EXPECT_TRUE(cpu.Execute(4));
+    EXPECT_EQ(cpu.Mem[0x24], 0x48);
+    EXPECT_EQ(cpu.TotalCycles, 0);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_STY_ZP){
+    cpu.Mem[0xFFFC] = STY_ZP;
+    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Y = 0x48;
+    EXPECT_TRUE(cpu.Execute(3));
+    EXPECT_EQ(cpu.Mem[0x24], 0x48);
+    EXPECT_EQ(cpu.TotalCycles, 0);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_STY_ZPX){
+    cpu.Mem[0xFFFC] = STY_ZPX;
+    cpu.Mem[0xFFFD] = 0x24;
+    cpu.X = 0x02;
+    cpu.Y = 0x48;
+    EXPECT_TRUE(cpu.Execute(4));
+    EXPECT_EQ(cpu.Mem[0x26], 0x48);
+    EXPECT_EQ(cpu.TotalCycles, 0);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_STY_ABS){
+    cpu.Mem[0xFFFC] = STY_ABS;
+    cpu.Mem[0xFFFD] = 0x24;
+    cpu.Y = 0x48;
+    EXPECT_TRUE(cpu.Execute(4));
+    EXPECT_EQ(cpu.Mem[0x24], 0x48);
+    EXPECT_EQ(cpu.TotalCycles, 0);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_TAX){
+    cpu.Mem[0xFFFC] = TAX;
+    cpu.A = 0x69;
+    EXPECT_TRUE(cpu.Execute(2));
+    EXPECT_EQ(cpu.X, 0x69);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_TAY){
+    cpu.Mem[0xFFFC] = TAY;
+    cpu.A = 0x69;
+    EXPECT_TRUE(cpu.Execute(2));
+    EXPECT_EQ(cpu.Y, 0x69);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_TSX){
+    cpu.Mem[0xFFFC] = TSX;
+    cpu.SP = 0x69;
+    EXPECT_TRUE(cpu.Execute(2));
+    EXPECT_EQ(cpu.X, 0x69);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_TXA){
+    cpu.Mem[0xFFFC] = TXA;
+    cpu.X = 0x69;
+    EXPECT_TRUE(cpu.Execute(2));
+    EXPECT_EQ(cpu.A, 0x69);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_TXS){
+    cpu.Mem[0xFFFC] = TXS;
+    cpu.X = 0x69;
+    EXPECT_TRUE(cpu.Execute(2));
+    EXPECT_EQ(cpu.SP, 0x69);
+    cpu.Reset();
+}
+
+TEST(CPUEMU, CPU_TYA){
+    cpu.Mem[0xFFFC] = TYA;
+    cpu.Y = 0x69;
+    EXPECT_TRUE(cpu.Execute(2));
     EXPECT_EQ(cpu.A, 0x69);
     cpu.Reset();
 }
