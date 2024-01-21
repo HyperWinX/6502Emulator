@@ -276,3 +276,8 @@ static int errors = 0;
 static int error_type = 0;
 
 jmp_buf error_jmp;
+
+#define IS_HEX_DIGIT(x) (isdigit(x) || \
+                        (x >= 'a') && (x <= 'f') || \
+                        (x >= 'A') && (x <= 'F'))
+#define IS_END(p)((!p || p == 0x0A) || (p == 0x0D))

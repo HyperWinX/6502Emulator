@@ -1,1 +1,0 @@
-/usr/bin/c++ -rdynamic CMakeFiles/emulator.dir/cpu.cpp.o CMakeFiles/emulator.dir/main.cpp.o -o emulator 
