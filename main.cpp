@@ -1,17 +1,14 @@
 #include "cpu.hpp"
 #include <cstdio>
 
-int main(){
-    EMU6502::CPU cpu;
-    cpu.Reset();
-    //Little program
-    cpu.Mem[0xFFFC] = 2;
-    cpu.Mem[0xFFFD] = 0x24;
-    cpu.Mem[0xFFFE] = 0x02;
-    cpu.Mem[0x0224] = 0x04;
-    cpu.Mem[0x0225] = 0x05;
-    cpu.Mem[0x0506] = 0x69;
-    cpu.Y = 2;
-    cpu.Execute(6);
-    printf("%x\n", cpu.A);
+void display_help(){
+    printf("Simple 6502 CPU emulator!\nEmulator can take following arguments:\n");
+    printf("\tassemble <asm_file> <output_file> - assemble assembly code for 6502 CPU using integrated assembler\n");
+    printf("\tgenrom <bin_file> <output_file> - generate ROM using binary file, which will be exactly 64KB\n");
+    printf("\texecute <rom_file> - execute generated ROM file\n");
+    exit(0);
+}
+
+int main(int argc, char* argv[]){
+    if (argc == 1) display_help();
 }
