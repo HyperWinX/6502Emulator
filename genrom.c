@@ -1,13 +1,13 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #define FILESZ 65536
 
-int main(int argc, char* argv[]){
-	if (argc == 1) return 1;
+int genrom(char* bin, char* out){
 	char rom[0xFFFF];
 	memset(rom, 0x00, sizeof(rom));
-	FILE* romfile = fopen("rom.bin", "wb");
-	FILE* assembly = fopen(argv[1], "rb");
+	FILE* romfile = fopen(bin, "wb");
+	FILE* assembly = fopen(out, "rb");
 	fseek(assembly, 0, SEEK_END);
 	size_t len = ftell(assembly);
 	rewind(assembly);
@@ -18,4 +18,5 @@ int main(int argc, char* argv[]){
 	fwrite(rom, sizeof(char), 0xFFFF, romfile);
 	fclose(romfile);
 	fclose(assembly);
+	puts("ROM generated!");
 }

@@ -21,6 +21,12 @@
 #include <time.h>
 #include <stdint.h>
 
+#if __STDC_VERSION__ >= 201112L
+#include <stdnoreturn.h>
+#else
+#define noreturn
+#endif
+
 static int flag_quiet = 0;
 
 static int pass_num;
@@ -65,8 +71,8 @@ static FILE* list_file;
 static int process_statements = 1;
 
 typedef struct value {
-    uint16_t value;
-    uint8_t type;
+    uint16_t v;
+    uint8_t t;
     uint8_t defined;
 } value;
 
@@ -77,7 +83,7 @@ enum {
 
 typedef struct symbol{
     char name[ID_LEN];
-    value value;
+    value val;
     uint8_t kind;
     struct symbol* next;
     struct symbol* locals;
@@ -225,7 +231,7 @@ enum{
     ERR_DIV_BY_ZERO,
     ERR_CPU_UNSUPPORTED,
     ERR_MISSING_REP
-}/
+};
 
 static char* err_msg[] = {
    "",
@@ -281,3 +287,99 @@ jmp_buf error_jmp;
                         (x >= 'a') && (x <= 'f') || \
                         (x >= 'A') && (x <= 'F'))
 #define IS_END(p)((!p || p == 0x0A) || (p == 0x0D))
+
+noreturn static void error(int);
+noreturn static void error_ext(int, const char*);
+noreturn static void error_abort(void);
+static uint16_t name_hash(const char*);
+static symbol* lookup(const char*, symbol*);
+static symbol* new_symbol(const char*);
+static void free_symbols(symbol*);
+static void free_symbol_tbl(void);
+static symbol* acquire(const char*);
+static symbol* acquire_local(const char*, symbol*);
+static symbol* define_label(const char*, uint16_t, symbol*);
+static symbol* reserve_label(const char*, symbol*);
+static void define_variable(const char*, const value, symbol*);
+static value to_byte(value);
+static uint16_t digit(const char*);
+static void skip_eol(char**);
+static void skip_white(char**);
+static void skip_white_and_comment(char**);
+static void skip_curr_and_white(char**);
+static void skip_to_eol(char**);
+static int starts_with(char*, char*);
+static value number(char**);
+static void ident(char**, char*, int, int);
+static value expr(char**);
+static value primary(char**);
+static value unary(char**);
+static value product(char**);
+static value term(char**);
+static value conversion(char**);
+static value comparison(char**);
+static value logical_and(char**);
+static value logical_or(char**);
+static value defined_or_else(char**);
+static value expr(char**);
+static void to_uppercase(char*);
+static instruction_desc* get_instruction_descr(const char*);
+static void emit_byte(uint8_t);
+static void emit(const char*, uint16_t);
+static void emit_word(uint16_t);
+static void print_notice(const char*);
+static void emit_instr_0(instruction_desc*, int);
+static void emit_instr_1(instruction_desc*, int, uint8_t);
+static void emit_instr_2(instruction_desc*, int, uint16_t);
+static void emit_instr_2b(instruction_desc*, int, uint8_t, uint8_t);
+static int instruction_imp_acc(instruction_desc*);
+static int instruction_imm(char**, instruction_desc*);
+static uint16_t calculate_offset(value);
+static int instruction_rel(instruction_desc*, value);
+static int instruction_ind(char**, instruction_desc*);
+static int instruction_abxy_zpxy(char**, instruction_desc*, value);
+static int instruction_abs_zp(instruction_desc*, value);
+static int instruction_zp_rel(char**, instruction_desc*, value);
+static void instruction(char**);
+static int string_lit(char**, char*, int);
+static void directive_byte(char**);
+static void directive_word(char**);
+static FILE* open_file(const char*, const char*);
+static long file_size(FILE*);
+static char* str_copy(const char* src);
+static asm_file* read_file(const char*);
+static void free_files(void);
+static void push_pos_stack(asm_file*, char*, uint16_t);
+static void pop_pos_stack(char**);
+static void directive_include(char**);
+static void directive_fill(char**, int);
+static void directive_binary(char**);
+static void directive_if(char**, int, int);
+static void directive_else(void);
+static void directive_endif(void);
+static void echo(char**);
+static void directive_echo(char**, int);
+static void directive_diagnostic(char**, int);
+static void directive_assert(char**, int);
+static void select_6502(void);
+static void select_65c02(void);
+static void directive_cpu(char**);
+static void directive_repeat(char**);
+static int directive_endrep(char**);
+static int directive(char**);
+static int is_mnemonic(const char*);
+static int statement(char**);
+static void byte_to_pchar(uint8_t, char*);
+static void word_to_pchar(uint16_t, char*);
+static void list_statement(char*, uint16_t);
+static int sym_cmp_name(const void*, const void*);
+static int sym_cmp_val(const void*, const void*);
+static symbol** symbol_tbl_to_array(void);
+static void fill_dots(char*, int);
+static void list_symbols(void);
+static void list_filename(char*);
+static int conditional_statement(char**);
+static void pass(char**);
+static int save_code(const char*, const uint8_t*, int);
+static int init_listing(char*);
+static int parse_args(char* argv[]);

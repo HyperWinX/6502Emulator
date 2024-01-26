@@ -1,24 +1,26 @@
 #include "assembler.h"
+#include <stdnoreturn.h>
 
 static uint8_t current_opcode = INV;
 static uint8_t last_opcode = INV;
+static uint16_t am_size[16];
 static instruction_desc itbl_6502[56];
 static instruction_desc itbl_65c02[98];
 
-noreturn static void error(int err){
+static noreturn void error(int err){
     errors++;
     error_type = ERROR_NORM;
     longjmp(error_jmp, err);
 }
 
-noreturn static void error_ext(int err, const char* msg){
+static noreturn void error_ext(int err, const char* msg){
     errors++;
     error_type = ERROR_EXT;
-    strncpy(error_hint, msg, sizeof(error_hint))
+    strncpy(error_hint, msg, sizeof(error_hint));
     longjmp(error_jmp, err);
 }
 
-noreturn static void error_abort(void){
+static noreturn void error_abort(void){
     errors++;
     error_type = ERROR_ABORT;
     longjmp(error_jmp, -1);
@@ -105,13 +107,13 @@ static symbol* define_label(const char* id, uint16_t v, symbol* parent){
     if (parent) sym = acquire_local(id, parent);
     else sym = acquire(id);
 
-    if (IS_VAR(*sym) || (DEFINED(sym->value) && (sym->value.v != v))){
+    if (IS_VAR(*sym) || (DEFINED(sym->val) && (sym->val.v != v))){
         if (pass_num == 1) error(ERR_REDEFINITION);
         else error(ERR_PHASE);
     }
-    sym->value.v = v;
-    sym->value.t ((TYPE(sym->value) == TYPE_WORD) ? TYPE_WORD : NUM_TYPE(v));
-    sym->value.defined = 1;
+    sym->val.v = v;
+    sym->val.t = ((TYPE(sym->val) == TYPE_WORD) ? TYPE_WORD : NUM_TYPE(v));
+    sym->val.defined = 1;
     sym->kind = KIND_LBL;
     sym->filename = current_file->filename;
     sym->line = current_line;
@@ -124,9 +126,9 @@ static symbol* reserve_label(const char* id, symbol* parent){
     symbol* sym;
     if (parent) sym = acquire_local(id, parent);
     else sym = acquire(id);
-    if (DEFINED(sym->value)) error(ERR_REDEFINITION);
-    sym->value.v = 0;
-    sym->value.t = TYPE_WORD;
+    if (DEFINED(sym->val)) error(ERR_REDEFINITION);
+    sym->val.v = 0;
+    sym->val.t = TYPE_WORD;
     sym->kind = KIND_LBL;
     return sym;
 }
@@ -136,19 +138,19 @@ static void define_variable(const char* id, const value v, symbol* parent){
     if (parent) sym = acquire_local(id, parent);
     else sym = acquire(id);
 
-    if (DEFINED(sym->value) && sym->value.v != v.v){
+    if (DEFINED(sym->val) && sym->val.v != v.v){
         if(pass_num == 1) error(ERR_REDEFINITION);
         else error(ERR_PHASE);
     }
-    sym->value.v = v.v;
-    sym->value.defined = v.defined;
+    sym->val.v = v.v;
+    sym->val.defined = v.defined;
     sym->filename = ( current_file ) ? current_file->filename : NULL;
     sym->line = current_line;
     sym->show_in_map = symmap_enabled;
 
-    if (!TYPE(sym->value)) sym->value.t = v.t;
+    if (!TYPE(sym->val)) sym->val.t = v.t;
 
-    if (IS_LBL(*sym)) SET_TYPE(sym->value, TYPE_WORD);
+    if (IS_LBL(*sym)) SET_TYPE(sym->val, TYPE_WORD);
     sym->kind = KIND_VAR;
 }
 
@@ -239,12 +241,12 @@ static value number(char** p){
 static void ident(char** pp, char* id, int numeric, int uppercase){
     int i = 0;
     char* p = *pp;
-    if ((!numeric && !isalpha(*p) && *p != '_')) ||
-        (!isalnum(*p) && (*p != '_')) error(ERR_ID);
+    if ((!numeric && !isalpha(*p) && *p != '_') ||
+        (!isalnum(*p) && (*p != '_'))) error(ERR_ID);
     do{
         *id++ = (char)(uppercase ? toupper(*p++) : *p++);
         i++;
-        if (i >= ID_LEN) errir(ERR_ID_LEN);
+        if (i >= ID_LEN) error(ERR_ID_LEN);
     } while (isalnum(*p) || (*p == '_'));
     *id = '\0';
     *pp = p;
@@ -269,8 +271,8 @@ static value primary(char** p){
     else if(**p == LOCAL_LABEL_LETTER && isalnum(*(*p + 1))){
         (*p)++;
         ident(p, id, 1, 0);
-        sym = lookup(id, curent_label->locals);
-        if (sym) res = sym->value;
+        sym = lookup(id, current_label->locals);
+        if (sym) res = sym->val;
     }
     else if (**p == PROGRAM_COUNTER_LETTER){
         (*p)++;
@@ -286,21 +288,21 @@ static value primary(char** p){
         SET_DEFINED(res);
         (*p)++;
         if (**p != '\'') error(ERR_CHR);
-        (*p)++:
+        (*p)++;
     }
     else if(isalpha(**p)){
         ident(p, id, 0, 0);
         sym = lookup(id, NULL);
-        if (!sym) sym = reverse_label(id, NULL);
+        if (!sym) sym = reserve_label(id, NULL);
         skip_white(p);
         if (**p == LOCAL_LABEL_LETTER){
             (*p)++;
             ident(p, id, 1, 0);
             local_sym = lookup(id, sym->locals);
-            if (!local_sym) local_sym = reverse_label(id, sym);
-            res = local_sym->value;
+            if (!local_sym) local_sym = (symbol*)reverse_label(id, sym);
+            res = local_sym->val;
         }
-        else res = sym->value;
+        else res = sym->val;
     }
     else res = number(p);
     return res;
@@ -367,7 +369,7 @@ static value product(char** p){
                         break;
                     case '/':
                         if (n2.v == 0) error(ERR_DIV_BY_ZERO);
-                        res.v = (uint16_t)(res.v / n2.v)ж
+                        res.v = (uint16_t)(res.v / n2.v);
                         break;
                     case AND_LETTER:
                         res.v = (uint16_t)(res.v / n2.v);
@@ -637,7 +639,7 @@ static void emit(const char* p, uint16_t len){
 static void emit_word(uint16_t w){
     if (pass_num == 2){
         if (output_counter < code_size - 1){
-            code[output_counter] = w & 0xFF:
+            code[output_counter] = w & 0xFF;
             code[output_counter + 1] = w >> 8;
         }
         else error(ERR_PHASE_SIZE);
@@ -675,14 +677,14 @@ static void emit_instr_1(instruction_desc* instr, int am, uint8_t o){
             last_opcode = current_opcode;
             current_opcode = code[output_counter];
         }
-        else error[ERR_PHASE_SIZE];
+        else error(ERR_PHASE_SIZE);
     }
     output_counter += 2;
 }
 
 static void emit_instr_2(instruction_desc* instr, int am, uint16_t o){
     if(pass_num == 2){
-        if (output_count < code_size - 2){
+        if (output_counter < code_size - 2){
             code[output_counter++] = instr->op[am];
             code[output_counter++] = o & 0xFF;
             code[output_counter++] = o >> 8;
@@ -911,7 +913,7 @@ static int string_lit(char** p, char* buf, int buf_size){
         if (buf_size && *p - start + 1 >= buf_size) error(ERR_STRLEN);
         if (IS_END(**p)) error(ERR_STR_END);
         if (buf) *(buf++) = **p;
-        (*p)++:
+        (*p)++;
     }
     if (buf) *buf = '\0';
     (*p)++;
@@ -998,7 +1000,7 @@ static long file_size(FILE* f){
 }
 
 static char* str_copy(const char* src){
-    char* dst = calloc(strlen(src) + 1);
+    char* dst = (char*)calloc(strlen(src) + 1, sizeof(char));
     if(!dst) error(ERR_NO_MEM);
 
     strcpy(dst, src);
@@ -1050,7 +1052,7 @@ static void free_files(void){
 
 static void push_pos_stack(asm_file* f, char* pos, uint16_t l){
     pos_stack* stk;
-    if (pos_stack_ptr >= MAX_POS_STACK) error(ERR_MAX_INC);
+    if (pos_stk_ptr >= MAX_POS_STACK) error(ERR_MAX_INC);
     stk = &pos_stk[pos_stk_ptr];
 
     stk->file = f;
@@ -1074,21 +1076,21 @@ static void pop_pos_stack(char** p){
     current_line = stk->line;
     listing_enabled = stk->listing_enabled;
     global_listing_enabled = stk->global_listing_enabled;
-    symmap_enabled = stk->symmap_enabled;
+    symmap_enabled = stk->sym_map_enabled;
 }
 
 static void directive_include(char** p){
     asm_file* file;
 
     skip_white(p);
-    string_lit(p, filename_buf, STR_LEN);
+    string_lit(p, filename_bufp, STR_LEN);
     skip_white_and_comment(p);
     if (!IS_END(**p)) error(ERR_EOL);
 
     skip_eol(p);
 
-    file = read_file(filename_buf);
-    if (!file) error_ext(ERR_OPEN, filename_buf);
+    file = read_file(filename_bufp);
+    if (!file) error_ext(ERR_OPEN, filename_bufp);
 
     push_pos_stack(current_file, *p, current_line + 1);
 
@@ -1128,10 +1130,10 @@ static void directive_binary(char** p){
     value skip, count = {0};
 
     skip_white(p);
-    string_lit(p, filename_buf, STR_LEN);
+    string_lit(p, filename_bufp, STR_LEN);
     skip_white_and_comment(p);
 
-    file = open_file(filename_buf, "rb");
+    file = open_file(filename_bufp, "rb");
     if (!file) error(ERR_OPEN);
 
     size = file_size(file);
@@ -1199,7 +1201,7 @@ static void directive_endif(void){
         error(ERR_MISSING_IF);
 
     process_statements = condition_sp->u.if_.process_statements;
-    condition_sp++:
+    condition_sp++;
 }
 
 static void echo(char** p){
@@ -1211,8 +1213,8 @@ static void echo(char** p){
         skip_white(p);
 
         if (**p == '"'){
-            string_lit(p, filename_buf, STR_LEN);
-            printf(filename_buf);
+            string_lit(p, filename_bufp, STR_LEN);
+            printf(filename_bufp);
         }
         else{
             if (starts_with(*p, "[$]")){
@@ -1333,7 +1335,7 @@ static void directive_repeat(char** p){
 }
 
 static int directive_endrep(char** p){
-    if(condition_sp >= condition_stack + CONDITION_STATE_MAX || condition_sp->ty != CONDITION_REPEAT)
+    if(condition_sp >= condition_stack + CONDITION_STATE_MAX || condition_sp->typ != CONDITION_REPEAT)
         error(ERR_MISSING_REP);
     if (condition_sp->u.rep.count > 1){
         *p = condition_sp->u.rep.pos;
@@ -1387,12 +1389,578 @@ static int directive(char** p){
 
 static int is_mnemonic(const char* id){
     char id_uppercase[ID_LEN];
-    int l = 0; r = instruction_tbl_size - 1, x;
+    int l = 0, r = instruction_tbl_size - 1, x;
     int cmp;
     strcpy(id_uppercase, id);
     to_uppercase(id_uppercase);
 
     while(r >= 1){
+        x = l + ((r - l) >> 2);
+        cmp = strcmp(id_uppercase, instruction_tbl[x].mn);
+        if (!cmp) return 1;
+        else if (cmp) l = x + 1;
+        else r = x - 1;
+    }
+    return 0;
+}
+
+static int statement(char** p){
+    char id1[ID_LEN];
+    value v1;
+    char* pt;
+    int again = 0;
+    enum{
+        NONE=0,
+        GLOBAL_LABEL=1,
+        LOCAL_LABEL=2
+    } label = NONE;
+
+    skip_white_and_comment(p);
+    if (IS_END(**p)) return 0;
+    pt = *p;
+
+    if (**p = LOCAL_LABEL_LETTER){
+        (*p)++;
+        ident(p, id1, 1, 0);
+        skip_white(p);
+        label = LOCAL_LABEL;
+    }
+    else if (isalpha(**p)){
+        ident(p, id1, 0, 0);
+        skip_white(p);
+        label = GLOBAL_LABEL;
+    }
+
+    if (label && **p == '='){
+        (*p)++;
+        v1 = expr(p);
+        if (label == GLOBAL_LABEL) define_variable(id1, v1, NULL);
+        else{
+            if (!current_label) error(ERR_NO_GLOBAL);
+            define_variable(id1, v1, current_label);
+        }
         
+        return again;
+    }
+    else if (label && ((**p == ':') || (!is_mnemonic(id1)))){
+        if (**p == ':') (*p)++;
+
+        if (label == GLOBAL_LABEL)
+            current_label = define_label(id1, address_counter, NULL);
+        else{
+            if (!current_label) error(ERR_NO_GLOBAL);
+            define_label(id1, address_counter, current_label);
+        }
+
+        skip_white_and_comment(p);
+        if (IS_END(**p)) return again;
+    }
+    else *p = pt;
+
+    if (**p == DIRECTIVE_LETTER){
+        (*p)++;
+        again = directive(p);
+    }
+    else if (isalpha(**p)) instruction(p);
+    else error(ERR_STMT);
+
+    return again;
+}
+
+static void byte_to_pchar(uint8_t w, char* p){
+    uint16_t v;
+    v = (w >> 4) & 0xF;
+    p[0] = (char)(v + '0' + ((v > 9) ? 'A' - '9' - 1 : 0));
+    v = w & 0xF;
+    p[1] = (char)(v + '0' + ((v > 9) ? 'A' - '9' - 1 : 0));
+}
+
+static void word_to_pchar(uint16_t w, char* p){
+    uint16_t v;
+    v = (w >> 12) & 0xF;
+    p[0] = (char)(v + '0' + ((v > 9) ? 'A' - '9' - 1 : 0));
+    v = (w >> 8) & 0xF;
+    p[1] = (char)(v + '0' + ((v > 9) ? 'A' - '9' - 1 : 0));
+    v = (w >> 4) & 0xF;
+    p[2] = (char)(v + '0' + ((v > 9) ? 'A' - '9' - 1 : 0));
+    v = w & 0xF;
+    p[3] = (char)(v + '0' + ((v > 9) ? 'A' - '9' - 1 : 0));
+}
+
+static void list_statement(char* statement_start, uint16_t pc_start, uint16_t oc_start, char* p, int skipped){
+    static char list_addr_buf[20] = "           ";
+    static char list_code_buf[4] = "   ";
+    int count = 0;
+
+    if (!listing_enabled || list_skip_one) return;
+
+    fprintf(list_file, "%5d", current_line);
+    if (skipped) fputs("- ", list_file);
+    else fputs(": ", list_file);
+
+    if (oc_start < output_counter){
+        word_to_pchar(oc_start, list_addr_buf);
+        word_to_pchar(pc_start, list_addr_buf + 5);
+        fputs(list_addr_buf, list_file);
+    }
+    else fputs("           ", list_file);
+
+    while (oc_start < output_counter && count < 3){
+        byte_to_pchar(code[oc_start++] & 0xFF, list_code_buf);
+        fputs(list_code_buf, list_file);
+        count++;
+    }
+
+    if (oc_start + count < output_counter) fputs("...", list_file);
+    else{
+        while(count < 4){
+            fputs("   ", list_file);
+            count++;
+        }
+    }
+    fputs("  ", list_file);
+    fwrite(statement_start, 1, (int)(p - statement_start), list_file);
+
+    fputs("\n", list_file);
+}
+
+static int sym_cmp_name(const void* a, const void* b){
+    const symbol *sa, *sb;
+    sa = *(const symbol**)a;
+    sb = *(const symbol**)b;
+
+    return strcmp(sa->name, sb->name);
+}
+
+static int sym_cmp_val(const void* a, const void* b){
+    const symbol *sa, *sb;
+    int res;
+
+    sa = *(const symbol**)a;
+    sb = *(const symbol**)b;
+
+    if (DEFINED(sa->val) && DEFINED(sb->val))
+        res = sa->val.v - sb->val.v;
+    else if (UNDEFINED(sa->val) && DEFINED(sb->val))
+        res = -1;
+    else if (DEFINED(sa->val) && UNDEFINED(sb->val))
+        res = 1;
+    else res = 0;
+
+    return (res != 0) ? res : strcmp(sa->name, sb->name);
+}
+
+static symbol** symbol_tbl_to_array(void){
+    symbol **tsym, *tsym2;
+    symbol **sym_array, **sym_p;
+
+    sym_array = sym_p = malloc(sizeof(symbol*)*((size_t)symbol_count + 1));
+    if (!sym_array) return NULL;
+
+    for (tsym = symbol_tbl; tsym < symbol_tbl + SYMBOL_TBL_SIZE; tsym++){
+        if (!*tsym) continue;
+        tsym2 = *tsym;
+        while (tsym2){
+            *sym_p++ = tsym2;
+            tsym2 = tsym2->next;
+        }
+    }
+    *sym_p = NULL;
+
+    return sym_array;
+}
+
+static void fill_dots(char* s, int len){
+    for (int i = 0; i < len; i++) s[i] = (i & 1) ? '.' : ' ';
+}
+
+static void list_symbols(void){
+    symbol *sym, **sym_array, **sym_p;
+    char name_buf[ID_LEN + 1];
+    
+    name_buf[ID_LEN] = '\0';
+
+    sym_array = symbol_tbl_to_array();
+    if (!sym_array) return;
+
+    for (int i = 1; i <= 2; i++){
+        sym_p = sym_array;
+        if (i == 1){
+            fputs("\n\nSYMBOLS BY NAME\n\n", list_file);
+            qsort(sym_array, symbol_count, sizeof(symbol*), sym_cmp_name);
+        } else {
+            fputs("\n\nSYMBOLS BY VALUE\n\n", list_file);
+            qsort(sym_array, symbol_count, sizeof(symbol*), sym_cmp_val);
+        }
+
+        fputs("NAME                              HEX    DEC  "
+              "SYM TYPE  WHERE\n", list_file);
+        for (; *sym_p; sym_p++){
+            sym = *sym_p;
+            if (!sym->show_in_map) continue;
+            fill_dots(name_buf, ID_LEN);
+            memcpy(name_buf, sym->name, strlen(sym->name));
+            fputs(name_buf, list_file);
+
+            if (DEFINED(sym->val)){
+                fprintf(list_file, TYPE(sym->val) == TYPE_BYTE ? "   %02X  %5u  " : "   %04X  %5u",
+                        sym->val.v, sym->val.v);
+            }
+            else fputs("    ?      ?  ", list_file);
+
+            if (sym->kind == KIND_LBL) fputs("LBL ", list_file);
+            else fputs("VAR ", list_file);
+
+            if (sym->val.t == TYPE_BYTE) fputs("BYTE  ", list_file);
+            else if (sym->val.t == TYPE_WORD) fputs("WORD  ", list_file);
+            else fputs("?     ", list_file);
+
+            if (sym->filename)
+                fprintf(list_file, "%s:%d", sym->filename, sym->line);
+            fputs("\n", list_file);
+        }
+    }
+    free(sym_array);
+}
+
+static void list_filename(char* fn){
+    if (listing_enabled) fprintf(list_file, " FILE: %s\n", fn);
+}
+
+static int conditional_statement(char** p){
+    char id[ID_LEN];
+    char* pt = *p;
+
+    skip_white(p);
+
+    if (**p != DIRECTIVE_LETTER) return 0;
+    (*p)++;
+    ident(p, id, 0, 1);
+
+    if (!strcmp(id, "IF")){
+        directive_if(p, 1, 0);
+        return 1;
+    } else if (!strcmp(id, "IFN")){
+        directive_if(p, 0, 0);
+        return 1;
+    } else if (!strcmp(id, "IFDEF")){
+        directive_if(p, 0, 1);
+        return 1;
+    } else if (!strcmp(id, "IFNDEF")){
+        directive_if(p, 0, 1);
+        return 1;
+    } else if (!strcmp(id, "ELSE")){
+        directive_else();
+        return 1;
+    } else if (!strcmp(id, "ENDIF")){
+        directive_endif();
+        return 1;
+    }
+
+    *p = pt;
+    return 0;
+}
+
+static void pass(char** p){
+    int err;
+
+    char* statement_start;
+    asm_file* last_file;
+    uint16_t oc_start;
+    uint16_t pc_start;
+    int conditional;
+
+    address_counter = 0;
+    output_counter = 0;
+
+    last_file = current_file;
+    current_line = 1;
+    current_label = NULL;
+    listing_enabled = global_listing_enabled;
+    symmap_enabled = 1;
+    process_statements = 1;
+
+    if (!(err = setjmp(error_jmp))){
+        while (**p || pos_stk_ptr > 0){
+            conditional = 0;
+            if (current_file != last_file){
+                if (pass_num == 2)
+                    list_filename(current_file->filename);
+            }
+
+            if (!**p){
+                pop_pos_stack(p);
+                continue;
+            }
+
+            statement_start = *p;
+            pc_start = address_counter;
+            oc_start = output_counter;
+
+            if (conditional_statement(p)) conditional = 1;
+            else if (process_statements)
+                if (statement(p)) continue;
+            else skip_to_eol(p);
+
+            skip_white_and_comment(p);
+
+            if (!IS_END(**p)) error(ERR_EOL);
+
+            if (pass_num == 2 && statement_start <= *p)
+                list_statement(statement_start, pc_start, oc_start, *p,
+                                !conditional && !process_statements);
+
+            skip_eol(p);
+            current_line++;
+
+            list_skip_one = 0;
+            last_file = current_file;
+        }
+
+        if (condition_sp < condition_stack + CONDITION_STATE_MAX)
+            error(ERR_UNCLOSED_COND);
+    }
+    else{
+        if (error_type == ERROR_NORM)
+            printf("%s:%d: error: %s\n", current_file->filename,
+                   current_line, err_msg[err]);
+        else if (error_type == ERROR_EXT)
+            printf("%s:%d: error: %s %s\n", current_file->filename, current_line,
+                   err_msg[err], error_hint);
     }
 }
+
+static int save_code(const char* fn, const uint8_t* data, int len){
+    FILE* f = fopen(fn, "wb");
+    if (!f) return 0;
+    if ((fwrite(data, len, 1, f) == 0) && (output_counter != 0)){
+        fclose(f);
+        return 0;
+    }
+    fclose(f);
+    return 1;
+}
+
+static int init_listing(char* fn){
+    time_t t;
+    struct tm* tm;
+    char ts[80];
+
+    list_file = fopen(fn, "wb");
+    global_listing_enabled = list_file != NULL;
+
+    if (!list_file) return 0;
+
+    time(&t);
+    tm = localtime(&t);
+    strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M", tm);
+
+    fprintf(list_file, "ASM6502        PROGRAM LISTING AND SYMBOL TABLE        "
+                       "DATE: %s\n\n"
+                       "MAIN INPUT FILE: %s\n\n",
+                       ts, current_file->filename);
+    fprintf(list_file, " Line# Pos  Addr  Code           Source\n");
+
+    return 1;
+}
+
+static char* source_filename = NULL;
+static char* listing_filename = NULL;
+static char* output_filename = NULL;
+
+static int parse_args(char* argv[]){
+    char* p;
+    value v;
+
+    argv++;
+    while (*argv){
+        if (**argv == '/' || **argv == '-'){
+            if (!strcmp(*argv + 1, "q")) flag_quiet++;
+            else if (!strcmp(*argv + 1, "o")){
+                argv++;
+                if (!*argv) return 0;
+                output_filename = *argv;
+            } else if (!strcmp(*argv + 1, "l")){
+                argv++;
+                if (!*argv) return 0;
+                listing_filename = *argv;
+            } else if (!strcmp(*argv + 1, "w0")) flag_diagnostic_level = 0;
+            else if (!strcmp(*argv + 1, "w1")) flag_diagnostic_level = 1;
+            else if (!strcmp(*argv + 1, "w2")) flag_diagnostic_level = 2;
+            else return 0;
+        } else if ((p = strchr(*argv, '=')) != NULL){
+            *p++ = 0;
+            if (!setjmp(error_jmp)){
+                v = number(&p);
+                define_variable(*argv, v, NULL);
+            } else return 0;
+        } else {
+            if (source_filename) return 0;
+            source_filename = *argv;
+        }
+        argv++;
+    }
+    return source_filename != NULL && output_filename != NULL;
+}
+
+static uint16_t am_size[16] = { 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 3, 3 };
+
+static instruction_desc itbl_6502[56] = {
+   { "ADC", { INV, INV, 0x69, INV, 0x65, 0x75, INV, 0x6d, 0x7d, 0x79, INV, 0x61, 0x71, INV, INV, INV } },
+   { "AND", { INV, INV, 0x29, INV, 0x25, 0x35, INV, 0x2d, 0x3d, 0x39, INV, 0x21, 0x31, INV, INV, INV } },
+   { "ASL", { 0x0a, INV, INV, INV, 0x06, 0x16, INV, 0x0e, 0x1e, INV, INV, INV, INV, INV, INV, INV } },
+   { "BCC", { INV, INV, INV, 0x90, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BCS", { INV, INV, INV, 0xb0, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BEQ", { INV, INV, INV, 0xf0, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BIT", { INV, INV, INV, INV, 0x24, INV, INV, 0x2c, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BMI", { INV, INV, INV, 0x30, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BNE", { INV, INV, INV, 0xd0, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BPL", { INV, INV, INV, 0x10, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BRK", { INV, 0x00, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BVC", { INV, INV, INV, 0x50, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BVS", { INV, INV, INV, 0x70, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLC", { INV, 0x18, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLD", { INV, 0xd8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLI", { INV, 0x58, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLV", { INV, 0xb8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CMP", { INV, INV, 0xc9, INV, 0xc5, 0xd5, INV, 0xcd, 0xdd, 0xd9, INV, 0xc1, 0xd1, INV, INV, INV } },
+   { "CPX", { INV, INV, 0xe0, INV, 0xe4, INV, INV, 0xec, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CPY", { INV, INV, 0xc0, INV, 0xc4, INV, INV, 0xcc, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "DEC", { INV, INV, INV, INV, 0xc6, 0xd6, INV, 0xce, 0xde, INV, INV, INV, INV, INV, INV, INV } },
+   { "DEX", { INV, 0xca, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "DEY", { INV, 0x88, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "EOR", { INV, INV, 0x49, INV, 0x45, 0x55, INV, 0x4d, 0x5d, 0x59, INV, 0x41, 0x51, INV, INV, INV } },
+   { "INC", { INV, INV, INV, INV, 0xe6, 0xf6, INV, 0xee, 0xfe, INV, INV, INV, INV, INV, INV, INV } },
+   { "INX", { INV, 0xe8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "INY", { INV, 0xc8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "JMP", { INV, INV, INV, INV, INV, INV, INV, 0x4c, INV, INV, 0x6c, INV, INV, INV, INV, INV } },
+   { "JSR", { INV, INV, INV, INV, INV, INV, INV, 0x20, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "LDA", { INV, INV, 0xa9, INV, 0xa5, 0xb5, INV, 0xad, 0xbd, 0xb9, INV, 0xa1, 0xb1, INV, INV, INV } },
+   { "LDX", { INV, INV, 0xa2, INV, 0xa6, INV, 0xb6, 0xae, INV, 0xbe, INV, INV, INV, INV, INV, INV } },
+   { "LDY", { INV, INV, 0xa0, INV, 0xa4, 0xb4, INV, 0xac, 0xbc, INV, INV, INV, INV, INV, INV, INV } },
+   { "LSR", { 0x4a, INV, INV, INV, 0x46, 0x56, INV, 0x4e, 0x5e, INV, INV, INV, INV, INV, INV, INV } },
+   { "NOP", { INV, 0xea, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "ORA", { INV, INV, 0x09, INV, 0x05, 0x15, INV, 0x0d, 0x1d, 0x19, INV, 0x01, 0x11, INV, INV, INV } },
+   { "PHA", { INV, 0x48, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PHP", { INV, 0x08, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PLA", { INV, 0x68, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PLP", { INV, 0x28, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "ROL", { 0x2a, INV, INV, INV, 0x26, 0x36, INV, 0x2e, 0x3e, INV, INV, INV, INV, INV, INV, INV } },
+   { "ROR", { 0x6a, INV, INV, INV, 0x66, 0x76, INV, 0x6e, 0x7e, INV, INV, INV, INV, INV, INV, INV } },
+   { "RTI", { INV, 0x40, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RTS", { INV, 0x60, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SBC", { INV, INV, 0xe9, INV, 0xe5, 0xf5, INV, 0xed, 0xfd, 0xf9, INV, 0xe1, 0xf1, INV, INV, INV } },
+   { "SEC", { INV, 0x38, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SED", { INV, 0xf8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SEI", { INV, 0x78, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "STA", { INV, INV, INV, INV, 0x85, 0x95, INV, 0x8d, 0x9d, 0x99, INV, 0x81, 0x91, INV, INV, INV } },
+   { "STX", { INV, INV, INV, INV, 0x86, INV, 0x96, 0x8e, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "STY", { INV, INV, INV, INV, 0x84, 0x94, INV, 0x8c, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TAX", { INV, 0xaa, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TAY", { INV, 0xa8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TSX", { INV, 0xba, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TXA", { INV, 0x8a, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TXS", { INV, 0x9a, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TYA", { INV, 0x98, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } }
+};
+
+static instruction_desc itbl_65c02[98] = {
+   { "ADC", { INV, INV, 0x69, INV, 0x65, 0x75, INV, 0x6d, 0x7d, 0x79, INV, 0x61, 0x71, 0x72, INV, INV } },
+   { "AND", { INV, INV, 0x29, INV, 0x25, 0x35, INV, 0x2d, 0x3d, 0x39, INV, 0x21, 0x31, 0x32, INV, INV } },
+   { "ASL", { 0x0a, INV, INV, INV, 0x06, 0x16, INV, 0x0e, 0x1e, INV, INV, INV, INV, INV, INV, INV } },
+   { "BBR0", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x0f } },
+   { "BBR1", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x1f } },
+   { "BBR2", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x2f } },
+   { "BBR3", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x3f } },
+   { "BBR4", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x4f } },
+   { "BBR5", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x5f } },
+   { "BBR6", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x6f } },
+   { "BBR7", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x7f } },
+   { "BBS0", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x8f } },
+   { "BBS1", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0x9f } },
+   { "BBS2", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0xaf } },
+   { "BBS3", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0xbf } },
+   { "BBS4", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0xcf } },
+   { "BBS5", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0xdf } },
+   { "BBS6", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0xef } },
+   { "BBS7", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, 0xff } },
+   { "BCC", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BCS", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BEQ", { INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BIT", { INV, INV, 0x89, INV, 0x24, 0x34, INV, 0x2c, 0x3c, INV, INV, INV, INV, INV, INV, INV } },
+   { "BMI", { INV, INV, INV, 0x30, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BNE", { INV, INV, INV, 0xd0, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BPL", { INV, INV, INV, 0x10, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BRA", { INV, INV, INV, 0x80, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BRK", { INV, 0x00, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BVC", { INV, INV, INV, 0x50, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "BVS", { INV, INV, INV, 0x70, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLC", { INV, 0x18, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLD", { INV, 0xd8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLI", { INV, 0x58, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CLV", { INV, 0xb8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CMP", { INV, INV, 0xc9, INV, 0xc5, 0xd5, INV, 0xcd, 0xdd, 0xd9, INV, 0xc1, 0xd1, 0xd2, INV, INV } },
+   { "CPX", { INV, INV, 0xe0, INV, 0xe4, INV, INV, 0xec, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "CPY", { INV, INV, 0xc0, INV, 0xc4, INV, INV, 0xcc, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "DEC", { 0x3a, INV, INV, INV, 0xc6, 0xd6, INV, 0xce, 0xde, INV, INV, INV, INV, INV, INV, INV } },
+   { "DEX", { INV, 0xca, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "DEY", { INV, 0x88, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "EOR", { INV, INV, 0x49, INV, 0x45, 0x55, INV, 0x4d, 0x5d, 0x59, INV, 0x41, 0x51, 0x52, INV, INV } },
+   { "INC", { 0xee, INV, INV, INV, 0xe6, 0xf6, INV, 0xee, 0xfe, INV, INV, INV, INV, INV, INV, INV } },
+   { "INX", { INV, 0xe8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "INY", { INV, 0xc8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "JMP", { INV, INV, INV, INV, INV, INV, INV, 0x4c, INV, INV, 0x6c, INV, INV, INV, 0x7c, INV } },
+   { "JSR", { INV, INV, INV, INV, INV, INV, INV, 0x20, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "LDA", { INV, INV, 0xa9, INV, 0xa5, 0xb5, INV, 0xad, 0xbd, 0xb9, INV, 0xa1, 0xb1, 0xb2, INV, INV } },
+   { "LDX", { INV, INV, 0xa2, INV, 0xa6, INV, 0xb6, 0xae, INV, 0xbe, INV, INV, INV, INV, INV, INV } },
+   { "LDY", { INV, INV, 0xa0, INV, 0xa4, 0xb4, INV, 0xac, 0xbc, INV, INV, INV, INV, INV, INV, INV } },
+   { "LSR", { 0x4a, INV, INV, INV, 0x46, 0x56, INV, 0x4e, 0x5e, INV, INV, INV, INV, INV, INV, INV } },
+   { "NOP", { INV, 0xea, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "ORA", { INV, INV, 0x09, INV, 0x05, 0x15, INV, 0x0d, 0x1d, 0x19, INV, 0x01, 0x11, 0x12, INV, INV } },
+   { "PHA", { INV, 0x48, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PHP", { INV, 0x08, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PHX", { INV, 0xda, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PHY", { INV, 0x5a, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PLA", { INV, 0x68, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PLP", { INV, 0x28, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PLX", { INV, 0xfa, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "PLY", { INV, 0x7a, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB0", { INV, INV, INV, INV, 0x07, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB1", { INV, INV, INV, INV, 0x17, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB2", { INV, INV, INV, INV, 0x27, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB3", { INV, INV, INV, INV, 0x37, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB4", { INV, INV, INV, INV, 0x47, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB5", { INV, INV, INV, INV, 0x57, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB6", { INV, INV, INV, INV, 0x67, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RMB7", { INV, INV, INV, INV, 0x77, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "ROL", { 0x2a, INV, INV, INV, 0x26, 0x36, INV, 0x2e, 0x3e, INV, INV, INV, INV, INV, INV, INV } },
+   { "ROR", { 0x6a, INV, INV, INV, 0x66, 0x76, INV, 0x6e, 0x7e, INV, INV, INV, INV, INV, INV, INV } },
+   { "RTI", { INV, 0x40, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "RTS", { INV, 0x60, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SBC", { INV, INV, 0xe9, INV, 0xe5, 0xf5, INV, 0xed, 0xfd, 0xf9, INV, 0xe1, 0xf1, 0xf2, INV, INV } },
+   { "SEC", { INV, 0x38, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SED", { INV, 0xf8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SEI", { INV, 0x78, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB0", { INV, INV, INV, INV, 0x87, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB1", { INV, INV, INV, INV, 0x97, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB2", { INV, INV, INV, INV, 0xa7, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB3", { INV, INV, INV, INV, 0xb7, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB4", { INV, INV, INV, INV, 0xc7, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB5", { INV, INV, INV, INV, 0xd7, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB6", { INV, INV, INV, INV, 0xe7, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "SMB7", { INV, INV, INV, INV, 0xf7, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "STA", { INV, INV, INV, INV, 0x85, 0x95, INV, 0x8d, 0x9d, 0x99, INV, 0x81, 0x91, 0x92, INV, INV } },
+   { "STP", { INV, 0xdb, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "STX", { INV, INV, INV, INV, 0x86, INV, 0x96, 0x8e, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "STY", { INV, INV, INV, INV, 0x84, 0x94, INV, 0x8c, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "STZ", { INV, INV, INV, INV, 0x64, 0x74, INV, 0x9c, 0x9e, INV, INV, INV, INV, INV, INV, INV } },
+   { "TAX", { INV, 0xaa, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TAY", { INV, 0xa8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TRB", { INV, INV, INV, INV, 0x14, INV, INV, 0x1c, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TSB", { INV, INV, INV, INV, 0x04, INV, INV, 0x0c, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TSX", { INV, 0xba, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TXA", { INV, 0x8a, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TXS", { INV, 0x9a, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "TYA", { INV, 0x98, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "WAI", { INV, 0xcb, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } }
+};
