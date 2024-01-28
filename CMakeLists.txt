@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(6502Emulator C CXX)
-add_executable(emulator cpu.cpp main.cpp genrom.c assembler/assembler.c)
-add_executable(tests cpu.cpp tests.cpp)
-add_executable(romgen genrom.c)
-target_link_libraries(tests gtest_main gtest pthread)
-add_custom_command(TARGET tests POST_BUILD COMMAND ./tests)
-set_target_properties(tests PROPERTIES COMPILE_FLAGS "-g -Wall -Werror")
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
+
+add_subdirectory(src)
