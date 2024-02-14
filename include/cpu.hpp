@@ -31,10 +31,13 @@ struct EMU6502::CPU{
         uint8_t X, Y, A;
         bool C, Z, I, D, B, V, N;
         int32_t TotalCycles;
+        bool CyclesUnlimited;
+        uint64_t ExecutedInstructions;
         Memory Mem;
         int initialized;
 	    int Execute(int32_t Cycles);
-        int Reset();
+        int Reset(void);
+        void LoadROM(char* romfile);
         void ADCSetStatusFlags(uint8_t Byte);
         void ANDSetStatusFlags();
         void DECSetStatusFlags(uint8_t Byte);

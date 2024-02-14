@@ -51,6 +51,7 @@ SOFTWARE.
 #include <ctype.h>
 #include <setjmp.h>
 #include <time.h>
+#include <stdint.h>
 
 #if __STDC_VERSION__ >= 201112L
 #include <stdnoreturn.h>
@@ -1178,7 +1179,9 @@ static void emit_instr_1( instruction_desc* instr, int am, u8 o ) {
    if ( pass_num == 2 ) {
       if ( output_counter < code_size - 1 ) {
          code[output_counter] = instr->op[am];
+         printf("Set opcode at counter %d - %X, value: %X\n", output_counter, instr->op[am], code[output_counter]);
          code[output_counter + 1] = o;
+         printf("Set argument at counter %d - %X, value: %X\n", output_counter + 1, o, code[output_counter + 1]);
 
          last_opcode = current_opcode;
          current_opcode = code[output_counter];
@@ -1197,6 +1200,9 @@ static void emit_instr_2( instruction_desc* instr, int am, u16 o ) {
          code[output_counter] = instr->op[am];
          code[output_counter + 1] = o & 0xff;
          code[output_counter + 2] = o >> 8;
+         printf("Write 1: 0x%p\n", code + output_counter);
+         printf("Write 2: 0x%p\n", code + output_counter + 1);
+         printf("Write 3: 0x%p\n", code + output_counter + 2);
 
          last_opcode = current_opcode;
          current_opcode = code[output_counter];
@@ -2631,9 +2637,7 @@ void print_usage( void ) {
 
 int assembler_entry_point( char* argv[] ) {
    char* source;
-    argv += 2;
-    puts(argv[0]);
-    puts(argv[1]);
+   argv += 2;
    if ( !parse_args( argv ) ) {
       print_usage();
       exit(0);
@@ -2698,7 +2702,7 @@ int assembler_entry_point( char* argv[] ) {
       if ( listing_filename )
          printf( "listing written to %s\n", listing_filename );
    }
-
+   printf("Code block: %x\n", *((uint16_t*)code));
    if ( !save_code( output_filename, code, output_counter ) ) {
       printf( "error saving file\n" );
       errors = 1;

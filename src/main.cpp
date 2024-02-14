@@ -30,6 +30,12 @@ int main(int argc, char** argv){
         assembler_entry_point(argv);
         return EXIT_SUCCESS;
     }
+    else if (argc == 3 && !strcmp(argv[1], "execute")){
+        EMU6502::CPU cpu;
+        cpu.Reset();
+        cpu.LoadROM(argv[2]);
+        cpu.Execute(0xFFFF);
+    }
     else{
         printf("argc: %d, second argv: %s", argc, argv[1]);
     }

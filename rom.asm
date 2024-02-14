@@ -1,2 +1,3 @@
 start:
-	lda $47
+	lda #47
+	sta $FFFB

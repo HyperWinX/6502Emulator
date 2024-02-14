@@ -30,7 +30,7 @@ int genrom(char* bin, char* out){
 	rewind(assembly);
 	if (len > FILESZ - 0x01FF - 4) return 1;
 	fread(rom + 0x0200, sizeof(char), len, assembly);
-	char fend[4] = {0x00, 0x02, 0x00, 0x00};
+	char fend[4] = {0x02, 0x00, 0x00, 0x00};
 	memcpy(rom + 0xFFFF - 4, fend, 4);
 	fwrite(rom, sizeof(char), 0xFFFF, romfile);
 	fclose(romfile);
