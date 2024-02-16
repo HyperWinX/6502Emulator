@@ -166,7 +166,6 @@ uint8_t EMU6502::CPU::FetchByte(uint16_t Address){
 uint16_t EMU6502::CPU::FetchWord(uint16_t Address){
     uint16_t Word = FetchByte(Address);
     Word |= (FetchByte(Address + 1) << 8);
-    printf("Fetched word: %X\n", Word);
     return Word;
 }
 uint8_t EMU6502::CPU::ReadByte(uint16_t Address){
@@ -230,12 +229,11 @@ EMU6502::CPU::~CPU(){
 int EMU6502::CPU::Execute(int32_t Cycles){
     TotalCycles = Cycles;
     if (Cycles == 0xFFFF) CyclesUnlimited = true;
-    if(!initialized){ PC = FetchWord(PC); printf("PC: %X\n", PC); initialized++; TotalCycles += 2;}
+    if(!initialized){ PC = ReadWord(PC); initialized++;}
     if (Mem[0xFFFB] != 0x00) {putchar(Mem[0xFFFB]); Mem[0xFFFB] = 0x00;}
-    printf("Address to jump: %X, current PC value: %X\n", *(uint16_t*)((char*)Mem.MemoryPointer + 0xFFFC), PC);
     while (CyclesUnlimited || TotalCycles > 0){
+		if (Mem[0xFFFB] != 0x00) {putchar(Mem[0xFFFB]); Mem[0xFFFB] = 0x00;}
         uint8_t instruction = FetchByte(PC);
-        //printf("Instr, PC=%X\n", PC);
         switch(instruction){
             // ADC instruction
             case ADC_IM:{
@@ -901,7 +899,6 @@ int EMU6502::CPU::Execute(int32_t Cycles){
             case LDA_IM:{
                 A = FetchByte(PC);
                 LDASetStatusFlags();
-                puts("Executed");
                 break;
             }
             case LDA_ZP:{
@@ -1389,8 +1386,12 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                 TotalCycles -= 3;
                 break;
             }
+			case KIL:{
+				puts("CPU stopped.");
+				return 0;
+			}
             default:
-                printf("Unknown instruction! CPU halted.\n");
+                printf("Unknown opcode %X! CPU halted.\n", instruction);
                 printf("Executed instructions: %ld\n", ExecutedInstructions);
                 StateDump();
                 SaveDump();

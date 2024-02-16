@@ -1200,10 +1200,6 @@ static void emit_instr_2( instruction_desc* instr, int am, u16 o ) {
          code[output_counter] = instr->op[am];
          code[output_counter + 1] = o & 0xff;
          code[output_counter + 2] = o >> 8;
-         printf("Write 1: 0x%p\n", code + output_counter);
-         printf("Write 2: 0x%p\n", code + output_counter + 1);
-         printf("Write 3: 0x%p\n", code + output_counter + 2);
-
          last_opcode = current_opcode;
          current_opcode = code[output_counter];
       }
@@ -1985,7 +1981,7 @@ static void directive_assert( char** p, int on_pass ) {
    }
 }
 
-static instruction_desc itbl_6502[56];
+static instruction_desc itbl_6502[57];
 static instruction_desc itbl_65c02[98];
 
 static void select_6502( void ) {
@@ -2729,7 +2725,7 @@ ret0:
 
 static u16 am_size[16] = { 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 3, 3 };
 
-static instruction_desc itbl_6502[56] = {
+static instruction_desc itbl_6502[57] = {
    { "ADC", { INV, INV, 0x69, INV, 0x65, 0x75, INV, 0x6d, 0x7d, 0x79, INV, 0x61, 0x71, INV, INV, INV } },
    { "AND", { INV, INV, 0x29, INV, 0x25, 0x35, INV, 0x2d, 0x3d, 0x39, INV, 0x21, 0x31, INV, INV, INV } },
    { "ASL", { 0x0a, INV, INV, INV, 0x06, 0x16, INV, 0x0e, 0x1e, INV, INV, INV, INV, INV, INV, INV } },
@@ -2759,6 +2755,7 @@ static instruction_desc itbl_6502[56] = {
    { "INY", { INV, 0xc8, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
    { "JMP", { INV, INV, INV, INV, INV, INV, INV, 0x4c, INV, INV, 0x6c, INV, INV, INV, INV, INV } },
    { "JSR", { INV, INV, INV, INV, INV, INV, INV, 0x20, INV, INV, INV, INV, INV, INV, INV, INV } },
+   { "KIL", { INV, 0x02, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV, INV } },
    { "LDA", { INV, INV, 0xa9, INV, 0xa5, 0xb5, INV, 0xad, 0xbd, 0xb9, INV, 0xa1, 0xb1, INV, INV, INV } },
    { "LDX", { INV, INV, 0xa2, INV, 0xa6, INV, 0xb6, 0xae, INV, 0xbe, INV, INV, INV, INV, INV, INV } },
    { "LDY", { INV, INV, 0xa0, INV, 0xa4, 0xb4, INV, 0xac, 0xbc, INV, INV, INV, INV, INV, INV, INV } },

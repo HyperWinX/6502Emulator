@@ -1,3 +1,4 @@
 start:
-	lda #47
+	lda $6F
 	sta $FFFB
+	kil
