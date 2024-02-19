@@ -20,6 +20,8 @@ int validate_size(FILE* target){
 	return size == 0xFFFF;
 }
 
+
+
 int genrom(char* bin, char* out){
 	char rom[0xFFFF];
 	memset(rom, 0x00, sizeof(rom));
@@ -30,8 +32,7 @@ int genrom(char* bin, char* out){
 	rewind(assembly);
 	if (len > FILESZ - 0x01FF - 4) return 1;
 	fread(rom + 0x0200, sizeof(char), len, assembly);
-	char fend[4] = {0x00, 0x02, 0x00, 0x00};
-	memcpy(rom + 0xFFFF - 4, fend, 4);
+	rom[0xFFFD] = 0x02;
 	fwrite(rom, sizeof(char), 0xFFFF, romfile);
 	fclose(romfile);
 	fclose(assembly);
@@ -43,4 +44,8 @@ int genrom(char* bin, char* out){
 	fclose(romfile);
 	puts("Validation complete.");
 	return 0;
+}
+
+void buf_genrom(char* asm_bin, char* target){
+	
 }

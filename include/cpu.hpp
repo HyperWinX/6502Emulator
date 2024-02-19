@@ -33,8 +33,10 @@ struct EMU6502::CPU{
         int32_t TotalCycles;
         Memory Mem;
         int initialized;
-	    int Execute(int32_t Cycles);
+		int Execute(int32_t Cycles);
+	    int Execute(int32_t Cycles, int debug);
         int Reset();
+		void LoadROM(char*);
         void ADCSetStatusFlags(uint8_t Byte);
         void ANDSetStatusFlags();
         void DECSetStatusFlags(uint8_t Byte);

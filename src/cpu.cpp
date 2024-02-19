@@ -19,6 +19,16 @@ int EMU6502::CPU::Reset(){
     return 1;
 }
 
+void EMU6502::CPU::LoadROM(char* romfile){
+    FILE* rom = fopen(romfile, "rb");
+    if (!rom){
+        puts("Can't open ROM file!");
+        exit(1);
+    }
+    fread(Mem.MemoryPointer, sizeof(char), 0xFFFF, rom);
+    fclose(rom);
+}
+
 void EMU6502::CPU::ADCSetStatusFlags(uint8_t Byte){
     if (A + Byte + (C ? 1 : 0) > 127)
         C = 1;
@@ -216,10 +226,15 @@ EMU6502::CPU::~CPU(){
     TotalCycles = 0;
 }
 int EMU6502::CPU::Execute(int32_t Cycles){
+	return Execute(Cycles, 0);
+}
+int EMU6502::CPU::Execute(int32_t Cycles, int debug){
         TotalCycles = Cycles;
 	    if(!initialized){ PC = FetchWord(PC); initialized++; TotalCycles += 2;}
             while (TotalCycles > 0){
                 uint8_t instruction = FetchByte(PC);
+				if (Mem[0xFFFB]){putchar(Mem[0xFFFB]); Mem[0xFFFB] = 0;}
+				if (debug){StateDump();getchar();}
                 switch(instruction){
                     // ADC instruction
                     case ADC_IM:{
@@ -368,8 +383,8 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     // BEQ instruction
                     case BEQ:{
                         TotalCycles--;
-                        if (!Z) break;
                         int8_t TargetOffset = FetchByte(PC);
+						if (!Z) break;
                         PC += TargetOffset;
                         TotalCycles--;
                         break;
@@ -884,6 +899,7 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                     // LDA instruction
                     case LDA_IM:{
                         A = FetchByte(PC);
+						printf("A is set to %X\n", A);
                         LDASetStatusFlags();
                         break;
                     }
@@ -1372,8 +1388,12 @@ int EMU6502::CPU::Execute(int32_t Cycles){
                         TotalCycles -= 3;
                         break;
                     }
+					case KIL:{
+						putchar('\n');
+						return 0;
+					}
                     default:
-                        printf("Unknown instruction! CPU halted.\n");
+                        printf("Unknown opcode %X! CPU halted.\n", instruction);
                         StateDump();
                         SaveDump();
                         return 0;

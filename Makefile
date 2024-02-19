@@ -13,7 +13,6 @@ emulator:
 	@mkdir build
 	@cmake -S . -B build
 	@cmake --build build --target emulator
-	$(MAKE) clean
 
 clean:
 	@rm -rf build

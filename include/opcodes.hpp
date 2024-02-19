@@ -198,3 +198,4 @@
 // Jump and return
 #define JSR_ABS 0x20
 #define RTS 0x60
+#define KIL 0x02
