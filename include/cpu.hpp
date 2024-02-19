@@ -37,6 +37,7 @@ struct EMU6502::CPU{
 	    int Execute(int32_t Cycles, int debug);
         int Reset();
 		void LoadROM(char*);
+		void SetROM(uint8_t*);
         void ADCSetStatusFlags(uint8_t Byte);
         void ANDSetStatusFlags();
         void DECSetStatusFlags(uint8_t Byte);

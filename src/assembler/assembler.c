@@ -2629,11 +2629,9 @@ void print_usage( void ) {
 }
 
 
-int assembler_entry_point( char* argv[] ) {
+char* assembler_entry_point( char* argv[] ) {
    char* source;
-    argv += 2;
-    puts(argv[0]);
-    puts(argv[1]);
+   argv += 2;
    if ( !parse_args( argv ) ) {
       print_usage();
       exit(0);
@@ -2694,7 +2692,6 @@ int assembler_entry_point( char* argv[] ) {
       list_symbols();
 
    if ( !flag_quiet ) {
-      printf( "output file %s, %d bytes written\n", output_filename, output_counter );
       if ( listing_filename )
          printf( "listing written to %s\n", listing_filename );
    }
@@ -2717,9 +2714,9 @@ ret0:
    free_symbol_tbl();
 
    if ( errors )
-      return EXIT_FAILURE;
+      return 0;
    else
-      return EXIT_SUCCESS;
+      return (char*)code;
 }
 
 

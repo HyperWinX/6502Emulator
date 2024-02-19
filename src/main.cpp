@@ -9,8 +9,13 @@ typedef struct asm_file {
 } asm_file;
 
 extern "C"{
-    void assembler_entry_point(char**);
+	char* output_filename;
+	uint16_t output_counter;
+	uint8_t* code;
+    char* assembler_entry_point(char**);
     int genrom(char*, char*);
+	void buf_genrom(char* asm_bin, int len, uint8_t* target);
+	int save_code(const char*, const uint8_t*, int);
 }
 void display_help(){
     printf("Simple 6502 CPU emulator!\nEmulator can take following arguments:\n");
@@ -29,12 +34,22 @@ int main(int argc, char** argv){
     }
     else if (argc == 4 && !strcmp(argv[1], "assemble")){
         assembler_entry_point(argv);
+		save_code(output_filename, code, output_counter);
         return EXIT_SUCCESS;
     }
 	else if (argc == 3 && !strcmp(argv[1], "execute")){
+		char* fake_argv[] = {(char*)"emu6502", (char*)"assemble", argv[2], (char*)"t.o"};
+		char* data = assembler_entry_point(fake_argv);
+		if (!data){
+			printf("Failed to assemble ROM!");
+			return EXIT_FAILURE;
+		}
+		uint8_t rom[0xFFFF];
+		memset(rom, 0x00, sizeof(rom));
+		buf_genrom(data, output_counter, rom);
 		EMU6502::CPU cpu;
 		cpu.Reset();
-		cpu.LoadROM(argv[2]);
+		cpu.SetROM((uint8_t*)&rom);
 		cpu.Execute(0xFFFF, 0);
 	}
 	else if (argc == 3 && !strcmp(argv[1], "new")){
@@ -43,8 +58,8 @@ int main(int argc, char** argv){
 			printf("Failed to get file descriptor!");
 			return 1;
 		}
-		char init[] = ".org $0200\n.word $0002 ; Reset vector\n.word $0000 ; Interrupt vector\n\nstart:\n\tlda #0\n";
-		fwrite(init, sizeof(char), sizeof(init), prj);
+		char init[] = ".org $0200\n.word $0002 ; Reset vector\n.word $0000 ; Interrupt vector\n\nstart:\n\tlda #0\n ";
+		fwrite(init, sizeof(char), sizeof(init) - 1, prj);
 		fclose(prj);
 		printf("Project generated!\n");
 	}

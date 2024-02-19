@@ -29,6 +29,10 @@ void EMU6502::CPU::LoadROM(char* romfile){
     fclose(rom);
 }
 
+void EMU6502::CPU::SetROM(uint8_t* rom){
+	Mem.MemoryPointer = rom;
+}
+
 void EMU6502::CPU::ADCSetStatusFlags(uint8_t Byte){
     if (A + Byte + (C ? 1 : 0) > 127)
         C = 1;

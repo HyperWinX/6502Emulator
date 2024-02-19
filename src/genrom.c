@@ -31,21 +31,20 @@ int genrom(char* bin, char* out){
 	size_t len = ftell(assembly);
 	rewind(assembly);
 	if (len > FILESZ - 0x01FF - 4) return 1;
-	fread(rom + 0x0200, sizeof(char), len, assembly);
-	rom[0xFFFD] = 0x02;
+	char bin_asm[len];
+	fread(bin_asm, sizeof(char), len, assembly);
+	memcpy(&rom[0x0200], bin_asm + 4, len - 4);
+	memcpy(rom + 0xFFFB, bin_asm, 4);
 	fwrite(rom, sizeof(char), 0xFFFF, romfile);
 	fclose(romfile);
 	fclose(assembly);
-	puts("ROM generated! Running validation...");
 	if (!(romfile = validate_existance(out))) return 1;
-	puts("File exists.");
 	if (!(validate_size(romfile))) return 1;
-	puts("ROM size is valid.");
 	fclose(romfile);
-	puts("Validation complete.");
 	return 0;
 }
 
-void buf_genrom(char* asm_bin, char* target){
-	
+void buf_genrom(char* asm_bin, int len, uint8_t* target){
+	memcpy(&target[0x0200], asm_bin + 4, len - 4);
+    memcpy(&target[0xFFFC], asm_bin, 4);
 }

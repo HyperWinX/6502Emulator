@@ -1,15 +1,15 @@
-build:
+build: clean
 	@mkdir build
 	@cmake -S . -B build
 	@cmake --build build
 
-tests:
+tests: clean
 	@mkdir build
 	@cmake -S . -B build
 	@cmake --build build --target tests
 	$(MAKE) clean
 
-emulator:
+emulator: clean
 	@mkdir build
 	@cmake -S . -B build
 	@cmake --build build --target emulator
