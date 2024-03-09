@@ -13,7 +13,7 @@ set(TESTS_SRCS    cpu.cpp
 add_executable(tests ${TESTS_SRCS})
 target_link_libraries(tests gtest_main gtest pthread)
 add_custom_command(TARGET tests POST_BUILD COMMAND ../tests)
-set_target_properties(tests PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+set_target_properties(tests PROPERTIES COMPILE_FLAGS "-Wall -Werror -static -O2")
 
 add_executable(emulator ${EMULATOR_SRCS})
 set_target_properties(emulator PROPERTIES COMPILE_FLAGS "-Wall -Werror -g")

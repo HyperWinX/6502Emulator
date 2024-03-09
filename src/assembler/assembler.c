@@ -77,6 +77,8 @@ static u16 code_size;
 
 static unsigned current_line; /* currently processed line number */
 
+int save_code(const char* fn, const uint8_t* data, int len);
+
 /* file and position structures */
 
 typedef struct asm_file {
@@ -2562,20 +2564,6 @@ static void pass( char** p ) {
    }
 }
 
-
-static int save_code( const char* fn, const u8* data, int len ) {
-   FILE* f = fopen( fn, "wb" );
-   if ( !f )
-      return 0;
-   if ( ( fwrite( data, len, 1, f ) == 0 ) && ( output_counter != 0 ) ) {
-      fclose( f );
-      return 0;
-   }
-   fclose( f );
-   return 1;
-}
-
-
 static int init_listing( char* fn ) {
    time_t t;
    struct tm* tm;
@@ -2639,12 +2627,12 @@ char* assembler_entry_point( char* argv[] ) {
 
    if ( !strcmp( source_filename, output_filename ) ) {
       printf( "refuse to overwrite your source ;-)\n" );
-      return EXIT_FAILURE;
+      return 0;
    }
    if ( listing_filename && ( !strcmp( source_filename, listing_filename ) ||
                                 !strcmp( output_filename, listing_filename ) ) ) {
       printf( "refuse to overwrite your files ;-)\n" );
-      return EXIT_FAILURE;
+      return 0;
    }
 
    if ( !( current_file = read_file( source_filename ) ) ) {
@@ -2705,7 +2693,6 @@ char* assembler_entry_point( char* argv[] ) {
 ret2:
    if ( list_file )
       fclose( list_file );
-   free( code );
 
 ret1:
    free_files();

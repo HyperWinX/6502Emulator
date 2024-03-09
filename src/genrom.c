@@ -46,5 +46,5 @@ int genrom(char* bin, char* out){
 
 void buf_genrom(char* asm_bin, int len, uint8_t* target){
 	memcpy(&target[0x0200], asm_bin + 4, len - 4);
-    memcpy(&target[0xFFFC], asm_bin, 4);
+    memcpy(target + 0xFFFF - 4, asm_bin, 4);
 }

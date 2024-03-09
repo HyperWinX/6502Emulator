@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include "cpu.hpp"
 #include "help.h"
 
@@ -10,13 +11,26 @@ typedef struct asm_file {
 
 extern "C"{
 	char* output_filename;
+	uint16_t code_size;
 	uint16_t output_counter;
 	uint8_t* code;
     char* assembler_entry_point(char**);
     int genrom(char*, char*);
 	void buf_genrom(char* asm_bin, int len, uint8_t* target);
-	int save_code(const char*, const uint8_t*, int);
 }
+
+extern "C" int save_code(const char* fn, const uint8_t* data, int len) {
+	FILE* f = fopen(fn, "wb");
+	if (!f)
+		return 0;
+	if ((fwrite(data, len, 1, f) == 0) && (output_counter != 0)) {
+      fclose(f);
+      return 0;
+   }
+   fclose(f);
+   return 1;
+}
+
 void display_help(){
     printf("Simple 6502 CPU emulator!\nEmulator can take following arguments:\n");
     printf("\tassemble <asm_file> <output_file> - assemble assembly code for 6502 CPU using integrated assembler\n");
@@ -34,10 +48,19 @@ int main(int argc, char** argv){
     }
     else if (argc == 4 && !strcmp(argv[1], "assemble")){
         assembler_entry_point(argv);
-		save_code(output_filename, code, output_counter);
+		save_code(output_filename, code, code_size);
+		free(code);
         return EXIT_SUCCESS;
     }
 	else if (argc == 3 && !strcmp(argv[1], "execute")){
+		int len = strlen(argv[2]);
+		if (strcmp((char*)(argv[2] + len - 4), (char*)".asm") && !strcmp((char*)(argv[2] + len - 4), (char*)".bin")){
+			EMU6502::CPU cpu;
+			cpu.Reset();
+			cpu.LoadROM(argv[2]);
+			cpu.Execute(0xFFFF);
+			return 0;
+		}
 		char* fake_argv[] = {(char*)"emu6502", (char*)"assemble", argv[2], (char*)"t.o"};
 		char* data = assembler_entry_point(fake_argv);
 		if (!data){
@@ -46,7 +69,8 @@ int main(int argc, char** argv){
 		}
 		uint8_t rom[0xFFFF];
 		memset(rom, 0x00, sizeof(rom));
-		buf_genrom(data, output_counter, rom);
+		buf_genrom(data, code_size, (uint8_t*)&rom);
+		free(code);
 		EMU6502::CPU cpu;
 		cpu.Reset();
 		cpu.SetROM((uint8_t*)&rom);
@@ -58,7 +82,7 @@ int main(int argc, char** argv){
 			printf("Failed to get file descriptor!");
 			return 1;
 		}
-		char init[] = ".org $0200\n.word $0002 ; Reset vector\n.word $0000 ; Interrupt vector\n\nstart:\n\tlda #0\n ";
+		char init[] = ".word $0002 ; Reset vector\n.word $0000 ; Interrupt vector\n.org $0200\n\nstart:\n\tlda #0\n ";
 		fwrite(init, sizeof(char), sizeof(init) - 1, prj);
 		fclose(prj);
 		printf("Project generated!\n");
