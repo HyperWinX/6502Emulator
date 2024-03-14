@@ -14,6 +14,11 @@ emulator: clean
 	@cmake -S . -B build
 	@cmake --build build --target emulator
 
+emulator-dbg: clean
+	@mkdir build
+	@cmake -S . -B build
+	@cmake --build build --target emulator-dbg
+
 clean:
 	@rm -rf build
 

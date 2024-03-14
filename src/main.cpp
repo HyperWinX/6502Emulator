@@ -4,19 +4,14 @@
 #include "cpu.hpp"
 #include "help.h"
 
-typedef struct asm_file {
-    char* filename;
-    char* text;
-} asm_file;
-
 extern "C"{
 	char* output_filename;
-	uint16_t code_size;
+	extern uint16_t code_size;
 	uint16_t output_counter;
-	uint8_t* code;
-    char* assembler_entry_point(char**);
+	extern uint8_t* code;
+    void assembler_entry_point(char**);
     int genrom(char*, char*);
-	void buf_genrom(char* asm_bin, int len, uint8_t* target);
+	void buf_genrom(char* asm_bin, int len, char* target);
 }
 
 extern "C" int save_code(const char* fn, const uint8_t* data, int len) {
@@ -62,14 +57,15 @@ int main(int argc, char** argv){
 			return 0;
 		}
 		char* fake_argv[] = {(char*)"emu6502", (char*)"assemble", argv[2], (char*)"t.o"};
-		char* data = assembler_entry_point(fake_argv);
-		if (!data){
+		assembler_entry_point(fake_argv);
+		if (!code){
 			printf("Failed to assemble ROM!");
 			return EXIT_FAILURE;
 		}
-		uint8_t rom[0xFFFF];
+		char rom[0xFFFF];
 		memset(rom, 0x00, sizeof(rom));
-		buf_genrom(data, code_size, (uint8_t*)&rom);
+		if (!code) puts("WTF");
+		buf_genrom((char*)&code, code_size, rom);
 		free(code);
 		EMU6502::CPU cpu;
 		cpu.Reset();

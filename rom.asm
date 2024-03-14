@@ -1,3 +1,5 @@
+.word $0002
+.word $0000
 .org $0200
 
 start:

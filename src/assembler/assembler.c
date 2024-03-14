@@ -58,8 +58,8 @@ SOFTWARE.
 #define noreturn
 #endif
 
-typedef unsigned char u8;
-typedef unsigned short u16;
+typedef uint8_t u8;
+typedef uint16_t u16;
 
 static int flag_quiet = 0;
 
@@ -72,8 +72,8 @@ static int pass_num; /* current assembler pass */
 static u16 address_counter = 0; /* program counter of currently assembled instruction */
 static u16 output_counter = 0;  /* counter of emitted output bytes */
 
-static u8* code = NULL; /* holds the emitted code */
-static u16 code_size;
+extern static u8* code = NULL; /* holds the emitted code */
+extern static u16 code_size = 0;
 
 static unsigned current_line; /* currently processed line number */
 
@@ -2617,7 +2617,7 @@ void print_usage( void ) {
 }
 
 
-char* assembler_entry_point( char* argv[] ) {
+void assembler_entry_point( char* argv[] ) {
    char* source;
    argv += 2;
    if ( !parse_args( argv ) ) {
@@ -2627,12 +2627,12 @@ char* assembler_entry_point( char* argv[] ) {
 
    if ( !strcmp( source_filename, output_filename ) ) {
       printf( "refuse to overwrite your source ;-)\n" );
-      return 0;
+      return;
    }
    if ( listing_filename && ( !strcmp( source_filename, listing_filename ) ||
                                 !strcmp( output_filename, listing_filename ) ) ) {
       printf( "refuse to overwrite your files ;-)\n" );
-      return 0;
+      return;
    }
 
    if ( !( current_file = read_file( source_filename ) ) ) {
@@ -2664,6 +2664,7 @@ char* assembler_entry_point( char* argv[] ) {
    /* second assembler pass */
    pass_num = 2;
    source = current_file->text;
+   printf("Code size: %d\n", code_size);
    code = malloc( code_size );
    pass( &source );
 
@@ -2700,10 +2701,10 @@ ret1:
 ret0:
    free_symbol_tbl();
 
-   if ( errors )
-      return 0;
-   else
-      return (char*)code;
+   if ( errors ){
+		free(code);
+		code = 0;
+   }
 }
 
 
